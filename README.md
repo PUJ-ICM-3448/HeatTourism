@@ -1,2 +1,2 @@
-# proyecto-equipo-2
-Proyecto equipo 2 - Naranja Piña
+# Heat Tourism
+Heat Tourism - Equipo 2 - Naranja Piña

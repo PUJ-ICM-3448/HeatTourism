@@ -6,7 +6,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 enum class Screen {
-    Home
+    Home,
+    Register,
+    LogIn,
+    Route,
+    Profile,
+    Company,
+    Buy,
+    Searcher,
+    CreatePost,
+    Post,
+    Map,
+    ManageCompany,
+    LogInCoordinator,
+    RouteGroup,
+    CheckIn,
+    RouteOverview
 }
 
 @Composable

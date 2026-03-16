@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="red_50">#FCE8EA</color>
+    <color name="red_100">#F7BFC4</color>
+    <color name="red_200">#F2979E</color>
+    <color name="red_300">#ED6E78</color>
+    <color name="red_400">#E63946</color>
+    <color name="red_500">#E31C2D</color>
+    <color name="red_600">#BA1725</color>
+    <color name="red_700">#91121D</color>
+    <color name="red_800">#680D15</color>
+    <color name="red_900">#40080C</color>
+    <color name="red_950">#170304</color>
+
+    <color name="orange_50">#FFECE6</color>
+    <color name="orange_100">#FFCBB8</color>
+    <color name="orange_200">#FFA98A</color>
+    <color name="orange_300">#FF875C</color>
+    <color name="orange_400">#FF6B35</color>
+    <color name="orange_500">#FF4400</color>
+    <color name="orange_600">#D13800</color>
+    <color name="orange_700">#A32C00</color>
+    <color name="orange_800">#751F00</color>
+    <color name="orange_900">#471300</color>
+    <color name="orange_950">#1A0700</color>
+
+    <color name="beige">#FFF8F0</color>
 </resources>

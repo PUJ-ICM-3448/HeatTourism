@@ -15,25 +15,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.naranjapina.heat_tourism.R
+import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
 
 @Composable
-fun GradientButton(text: String, onClick: () -> Unit) {
+fun GradientButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         content = {
-            Text(text, modifier = Modifier.padding(5.dp))
+            Text(text, modifier = Modifier.padding(2.dp, 0.dp))
         },
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.White,
             containerColor = Color.Transparent
         ),
-        modifier = Modifier.fillMaxWidth().background(
-            brush = Brush.linearGradient(
-                colors = listOf(
-                    colorResource(R.color.red_400),
-                    colorResource(R.color.orange_400),
-                ),
-            ),
+        modifier = modifier.background(
+            brush = RedToOrangeGradientBrush(),
             shape = RoundedCornerShape(15.dp)
         ).clip(RoundedCornerShape(15.dp)),
         shape = RoundedCornerShape(15.dp)

@@ -1,18 +1,20 @@
 package com.naranjapina.heat_tourism.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.naranjapina.heat_tourism.screen.BuyScreen
 import com.naranjapina.heat_tourism.screen.CheckInScreen
 import com.naranjapina.heat_tourism.screen.CompanyScreen
 import com.naranjapina.heat_tourism.screen.CreatePostScreen
-import com.naranjapina.heat_tourism.screen.HomeScreen
 import com.naranjapina.heat_tourism.screen.LogInCoordinatorScreen
 import com.naranjapina.heat_tourism.screen.LogInScreen
 import com.naranjapina.heat_tourism.screen.ManageCompanyScreen
 import com.naranjapina.heat_tourism.screen.MapScreen
+import com.naranjapina.heat_tourism.screen.NoTravelHomeScreen
 import com.naranjapina.heat_tourism.screen.PostScreen
 import com.naranjapina.heat_tourism.screen.ProfileScreen
 import com.naranjapina.heat_tourism.screen.RegisterScreen
@@ -20,6 +22,8 @@ import com.naranjapina.heat_tourism.screen.RouteGroupScreen
 import com.naranjapina.heat_tourism.screen.RouteOverviewScreen
 import com.naranjapina.heat_tourism.screen.RouteScreen
 import com.naranjapina.heat_tourism.screen.SearcherScreen
+import com.naranjapina.heat_tourism.screen.TravelHomeScreen
+import kotlin.collections.listOf
 
 enum class Screen {
     Home,
@@ -44,7 +48,7 @@ enum class Screen {
 fun NavigationStack() {
     val navController = rememberNavController()
 
-    NavHost (navController, startDestination= Screen.LogIn.name) {
+    NavHost (navController, startDestination= Screen.CreatePost.name) {
         composable(
             route = Screen.Buy.name
         ) {
@@ -66,9 +70,20 @@ fun NavigationStack() {
             CreatePostScreen(navController)
         }
         composable(
-            route = Screen.Home.name
+            route = "${Screen.Home.name}?state={state}",
+            arguments = listOf(
+                navArgument("state") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
         ) {
-            HomeScreen(navController)
+            val state = it.arguments?.getString("state")
+
+            if(state == "travel")
+                TravelHomeScreen(navController)
+            else
+                NoTravelHomeScreen(navController)
         }
         composable(
             route = Screen.LogIn.name

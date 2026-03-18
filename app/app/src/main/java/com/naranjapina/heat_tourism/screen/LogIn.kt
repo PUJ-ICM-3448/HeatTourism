@@ -36,13 +36,11 @@ import com.naranjapina.heat_tourism.component.GradientButton
 import com.naranjapina.heat_tourism.component.GradientText
 import com.naranjapina.heat_tourism.component.InputText
 import com.naranjapina.heat_tourism.component.TextDivider
+import com.naranjapina.heat_tourism.navigation.Screen
 
 @Composable
 fun LogInScreen(navController: NavHostController) {
     var email by remember {
-        mutableStateOf("")
-    }
-    var name by remember {
         mutableStateOf("")
     }
     var password by remember {
@@ -99,7 +97,7 @@ fun LogInScreen(navController: NavHostController) {
                     }
 
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(25.dp)
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
                         InputText(
                             label = "Correo Electronico",
@@ -129,8 +127,8 @@ fun LogInScreen(navController: NavHostController) {
                         )
 
                         GradientButton(
-                            "Probando"
-                        ) { }
+                            text="Iniciar sesión"
+                        ) { navController.navigate(Screen.Home.name) }
 
                         TextDivider("o continúa con")
 
@@ -148,7 +146,10 @@ fun LogInScreen(navController: NavHostController) {
                             GradientText(
                                 text = "Regístrate",
                                 fontSize = 16.sp,
-                                fontWeight = FontWeight.Normal
+                                fontWeight = FontWeight.Normal,
+                                onClick = {
+                                    navController.navigate(Screen.Register.name)
+                                }
                             )
                         }
                     }

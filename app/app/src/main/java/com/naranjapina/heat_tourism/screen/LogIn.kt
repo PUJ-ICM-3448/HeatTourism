@@ -127,6 +127,7 @@ fun LogInScreen(navController: NavHostController) {
                         )
 
                         GradientButton(
+                            modifier = Modifier.fillMaxWidth(),
                             text="Iniciar sesión"
                         ) { navController.navigate(Screen.Home.name) }
 

@@ -48,7 +48,7 @@ enum class Screen {
 fun NavigationStack() {
     val navController = rememberNavController()
 
-    NavHost (navController, startDestination= Screen.CreatePost.name) {
+    NavHost (navController, startDestination= Screen.Register.name) {
         composable(
             route = Screen.Buy.name
         ) {

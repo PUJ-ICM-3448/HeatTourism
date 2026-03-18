@@ -132,6 +132,7 @@ fun RegisterScreen(navController: NavHostController) {
                         )
 
                         GradientButton(
+                            modifier = Modifier.fillMaxWidth(),
                             text="Crear cuenta"
                         ) {navController.navigate(Screen.Home.name)}
 

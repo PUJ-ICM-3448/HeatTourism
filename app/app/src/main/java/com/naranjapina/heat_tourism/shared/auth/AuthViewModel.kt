@@ -1,5 +1,6 @@
 package com.naranjapina.heat_tourism.shared.auth
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,7 +34,7 @@ class AuthViewModel : ViewModel() {
   ) {
     if(email.isBlank() || password.isBlank()) {
       feedbackMessage = "Email y contraseña son requeridos"
-      return
+      return;
     }
 
     isLoading = true;
@@ -41,6 +42,7 @@ class AuthViewModel : ViewModel() {
     auth.signInWithEmailAndPassword(email, password)
       .addOnCompleteListener { task ->
         isLoading = false;
+        _currentUser.value = null;
         if(task.isSuccessful) {
           _currentUser.value = auth.currentUser
         } else {

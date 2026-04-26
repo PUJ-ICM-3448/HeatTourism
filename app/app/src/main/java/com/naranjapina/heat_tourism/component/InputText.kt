@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.naranjapina.heat_tourism.R
 
 @Composable
-fun InputText (label: String, value: String, placeholder: String, changeValue: (String) -> Unit, icon: ImageVector) {
+fun InputText (label: String, value: String, placeholder: String, enabled: Boolean = true, changeValue: (String) -> Unit, icon: ImageVector) {
     Column(
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -41,6 +41,7 @@ fun InputText (label: String, value: String, placeholder: String, changeValue: (
             fontSize = 18.sp
             )
         TextField(
+            enabled = enabled,
             value= value,
             placeholder = {
                 Text(placeholder)

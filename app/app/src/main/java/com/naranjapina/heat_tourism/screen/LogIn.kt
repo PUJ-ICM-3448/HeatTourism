@@ -47,6 +47,11 @@ fun LogInScreen(navController: NavHostController) {
         mutableStateOf("")
     }
 
+    // Firebase Auth
+
+
+
+
     Scaffold(
         containerColor = colorResource(R.color.beige)
     ) {paddingValues ->

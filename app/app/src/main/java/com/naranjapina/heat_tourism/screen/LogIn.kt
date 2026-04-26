@@ -141,6 +141,14 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             textAlign = TextAlign.Right
                         )
 
+                        if(authViewModel.feedbackMessage != null) {
+                            Text(
+                                text = authViewModel.feedbackMessage!!,
+                                color = colorResource(R.color.red_400),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
                             text="Iniciar sesión",

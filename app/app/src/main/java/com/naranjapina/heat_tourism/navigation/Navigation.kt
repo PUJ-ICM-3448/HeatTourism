@@ -1,6 +1,8 @@
 package com.naranjapina.heat_tourism.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -51,7 +53,13 @@ fun NavigationStack() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel();
 
-    NavHost (navController, startDestination= Screen.Register.name) {
+    val currentUser by authViewModel.currentUser.collectAsState();
+
+    NavHost (navController, startDestination=
+        if(currentUser == null)
+            Screen.Register.name
+        else Screen.Home.name
+    ) {
         composable(
             route = Screen.Buy.name
         ) {

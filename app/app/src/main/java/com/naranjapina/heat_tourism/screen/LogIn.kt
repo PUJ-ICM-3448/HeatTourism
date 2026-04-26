@@ -130,7 +130,8 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             },
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
-                            enabled = !authViewModel.isLoading
+                            enabled = !authViewModel.isLoading,
+                            isSecret = true
                         )
 
                         Text(

@@ -116,7 +116,10 @@ fun NavigationStack() {
         composable(
             route = Screen.Profile.name
         ) {
-            ProfileScreen(navController)
+            ProfileScreen(
+                authViewModel,
+                navController
+            )
         }
         composable(
             route = Screen.Register.name

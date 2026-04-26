@@ -50,4 +50,13 @@ class AuthViewModel : ViewModel() {
         }
       }
   }
+
+  fun logOutUser () {
+    auth.signOut()
+    _currentUser.value = null
+
+    email = ""
+    password = ""
+    feedbackMessage = "Sesión cerrada"
+  }
 }

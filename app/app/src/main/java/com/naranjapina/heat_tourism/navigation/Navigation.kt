@@ -132,7 +132,7 @@ fun NavigationStack() {
         composable(
             route = Screen.Register.name
         ) {
-            RegisterScreen(navController)
+            RegisterScreen(authViewModel, navController)
         }
         composable(
             route = Screen.Route.name

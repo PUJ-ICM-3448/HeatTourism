@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -58,5 +59,37 @@ class AuthViewModel : ViewModel() {
     email = ""
     password = ""
     feedbackMessage = "Sesión cerrada"
+  }
+
+  fun signUpUser(
+    email: String,
+    password: String
+  ) {
+    if(email.isBlank() || password.isBlank()) {
+      feedbackMessage = "Email y contraseña son requeridos"
+      return;
+    }
+
+    if(password.length < 8) {
+      feedbackMessage = "La contraseña debe tener al menos 8 caracteres"
+      return;
+    }
+
+    isLoading = true
+    feedbackMessage = null
+
+    auth.createUserWithEmailAndPassword(
+      email,
+      password
+    )
+      .addOnCompleteListener { task ->
+        isLoading = false;
+
+        if (task.isSuccessful)
+          _currentUser.value = auth.currentUser
+        else
+          feedbackMessage = task.exception?.message
+      }
+
   }
 }

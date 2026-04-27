@@ -1,5 +1,6 @@
 package com.naranjapina.heat_tourism.screen
 import android.widget.Space
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradient
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,10 +51,16 @@ import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
 import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
+import com.naranjapina.heat_tourism.utils.rememberShakeDetector
 
 @Composable
 fun NoTravelHomeScreen(navController: NavHostController) {
     var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    rememberShakeDetector {
+        Toast.makeText(context, "Feed actualizado 🔄", Toast.LENGTH_SHORT).show()
+    }
 
     MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
         LazyColumn(
@@ -132,6 +140,11 @@ fun NoTravelHomeScreen(navController: NavHostController) {
 
 @Composable
 fun TravelHomeScreen(navController: NavHostController) {
+    val context = LocalContext.current
+
+    rememberShakeDetector {
+        Toast.makeText(context, "Publicaciones del grupo actualizadas 🔄", Toast.LENGTH_SHORT).show()
+    }
 
     MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
         LazyColumn(

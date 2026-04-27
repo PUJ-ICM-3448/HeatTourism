@@ -7,11 +7,12 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import kotlin.math.sqrt
 
-private const val SHAKE_THRESHOLD_GRAVITY = 2.7f
+private const val SHAKE_THRESHOLD_GRAVITY = 1.3f
 private const val SHAKE_DEBOUNCE_MS = 1000L
 
 @Composable

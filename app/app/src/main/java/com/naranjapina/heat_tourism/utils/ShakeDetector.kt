@@ -12,7 +12,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.platform.LocalContext
 import kotlin.math.sqrt
 
-private const val SHAKE_THRESHOLD_GRAVITY = 1.3f
+private const val SHAKE_THRESHOLD_GRAVITY = 2.3f
 private const val SHAKE_DEBOUNCE_MS = 1000L
 
 @Composable

@@ -65,4 +65,9 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.4.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Bloque B - Mapas + Localizacion + Rutas
+    implementation(libs.mapbox.android)
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
 }

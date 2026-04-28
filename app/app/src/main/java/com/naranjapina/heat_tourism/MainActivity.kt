@@ -5,22 +5,22 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.Navigation
+import com.mapbox.common.MapboxOptions
 import com.naranjapina.heat_tourism.navigation.NavigationStack
-import com.naranjapina.heat_tourism.ui.theme.HeatTourismTheme
+import com.naranjapina.heat_tourism.utils.MapboxConfig
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val token = MapboxConfig.accessToken(this)
+        if (token.isNotBlank()) {
+            MapboxOptions.accessToken = token
+        }
+
         enableEdgeToEdge()
         setContent {
             Surface(

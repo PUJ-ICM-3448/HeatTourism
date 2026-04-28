@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -34,16 +34,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.mapbox.common.MapboxOptions
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
-import com.mapbox.maps.MapboxOptions
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
@@ -55,20 +56,15 @@ import com.mapbox.maps.plugin.annotation.generated.createPolylineAnnotationManag
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.component.GradientButton
+import com.naranjapina.heat_tourism.component.LocationPicker
 import com.naranjapina.heat_tourism.data.MapboxDirectionsApi
 import com.naranjapina.heat_tourism.data.SampleDestinations
 import com.naranjapina.heat_tourism.data.model.MapPoint
 import com.naranjapina.heat_tourism.data.model.RouteSummary
+import com.naranjapina.heat_tourism.navigation.Screen
 import com.naranjapina.heat_tourism.utils.LocationUtils
 import com.naranjapina.heat_tourism.utils.MapboxConfig
 
-/**
- * Pantalla de overview de una ruta entre la posicion actual del usuario
- * y un destino seleccionado (Bloque B).
- *
- * Si no hay permiso de ubicacion, usa La Rambla como punto de origen
- * para que la pantalla siempre muestre algo util.
- */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RouteOverviewScreen(
@@ -79,12 +75,15 @@ fun RouteOverviewScreen(
 
     LaunchedEffect(Unit) {
         val token = MapboxConfig.accessToken(context)
-        if (token.isNotBlank()) MapboxOptions.accessToken = token
+        if (token.isNotBlank()) {
+            MapboxOptions.accessToken = token
+        }
     }
+
 
     val destination = remember(destinationId) {
         destinationId?.let { SampleDestinations.byId(it) }
-            ?: SampleDestinations.barcelonaDestinations.first()
+            ?: SampleDestinations.bogotaDestinations.first()
     }
 
     val permissionsState = rememberMultiplePermissionsState(
@@ -107,14 +106,11 @@ fun RouteOverviewScreen(
     LaunchedEffect(permissionsState.allPermissionsGranted, destination.id) {
         loading = true
         errorMsg = null
-        val hasPerm = permissionsState.permissions.any { it.status.isGranted }
-        val originPair: Pair<Double, Double> = if (hasPerm) {
-            val loc = LocationUtils.getCurrentLocation(context)
-            if (loc != null) loc.longitude to loc.latitude
-            else 2.1734 to 41.3818 // fallback: La Rambla
-        } else {
-            2.1734 to 41.3818
-        }
+        val originPair = LocationUtils.getCurrentOrFallbackPoint(
+            context = context,
+            fallbackLng = SampleDestinations.BOGOTA_CENTER_LNG,
+            fallbackLat = SampleDestinations.BOGOTA_CENTER_LAT
+        )
         origin = originPair
 
         val token = MapboxConfig.accessToken(context)
@@ -149,14 +145,20 @@ fun RouteOverviewScreen(
         )
 
         Icon(
-            imageVector = Icons.Outlined.KeyboardArrowLeft,
+            imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowLeft,
             contentDescription = "Volver",
             modifier = Modifier
-                .padding(15.dp)
+                .statusBarsPadding()
+                .padding(12.dp)
                 .clip(RoundedCornerShape(50))
                 .background(Color.White.copy(alpha = .9f))
-                .clickable { navController.popBackStack() }
-                .padding(10.dp)
+                .clickable {
+                    val popped = navController.popBackStack()
+                    if (!popped) {
+                        navController.navigate(Screen.Searcher.name)
+                    }
+                }
+                .padding(12.dp)
         )
 
         Column(
@@ -178,6 +180,32 @@ fun RouteOverviewScreen(
                 text = destination.description,
                 color = colorResource(R.color.dark_beige)
             )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            LocationPicker(
+                modifier = Modifier.fillMaxWidth(),
+                fallbackLabel = "Plaza de Bolivar, Bogota",
+                onChangeRequested = { navController.navigate(Screen.Map.name) }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Elegir en mapa",
+                    color = colorResource(R.color.red_400),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { navController.navigate(Screen.Map.name) }
+                )
+                Text(
+                    text = "Buscar destino",
+                    color = colorResource(R.color.red_400),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { navController.navigate(Screen.Searcher.name) }
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
             when {
@@ -215,10 +243,11 @@ fun RouteOverviewScreen(
             GradientButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Iniciar ruta"
-            ) { /* hook a CheckIn / etapa siguiente */ }
+            ) { }
         }
     }
 }
+
 
 @Composable
 private fun Stat(label: String, value: String) {
@@ -304,6 +333,7 @@ private fun RouteMap(
                         .withLineWidth(5.0)
                 )
                 val pts = geo.map { Point.fromLngLat(it.first, it.second) }
+                @Suppress("DEPRECATION")
                 val cam = view.mapboxMap.cameraForCoordinates(
                     pts,
                     EdgeInsets(120.0, 60.0, 320.0, 60.0),

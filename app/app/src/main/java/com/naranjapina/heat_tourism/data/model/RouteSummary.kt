@@ -1,11 +1,5 @@
 package com.naranjapina.heat_tourism.data.model
 
-/**
- * Resumen de una ruta calculada por Mapbox Directions API (Bloque B).
- * - distanceMeters: distancia total en metros.
- * - durationSeconds: duracion estimada en segundos.
- * - geometry: lista de puntos (lng, lat) que forman la polilinea de la ruta.
- */
 data class RouteSummary(
     val distanceMeters: Double,
     val durationSeconds: Double,

@@ -42,12 +42,24 @@ fun SearcherScreen(navController: NavHostController) {
     var text by remember {
         mutableStateOf("")
     }
-    val filteredDestinations = remember(text) {
+    var selectedCategory by remember {
+        mutableStateOf(SampleDestinations.ALL_CATEGORIES)
+    }
+
+    val categoryOptions = remember {
+        SampleDestinations.categoryOptions()
+    }
+
+    val filteredDestinations = remember(text, selectedCategory) {
+        val categoryFiltered = SampleDestinations.filterByCategory(
+            destinations = SampleDestinations.bogotaDestinations,
+            selectedCategory = selectedCategory
+        )
         val query = text.trim().lowercase()
         if (query.isBlank()) {
-            SampleDestinations.barcelonaDestinations
+            categoryFiltered
         } else {
-            SampleDestinations.barcelonaDestinations.filter { point ->
+            categoryFiltered.filter { point ->
                 point.name.lowercase().contains(query) ||
                     point.description.lowercase().contains(query) ||
                     point.category.lowercase().contains(query)
@@ -94,7 +106,16 @@ fun SearcherScreen(navController: NavHostController) {
 
             item {
                 Spacer(modifier = Modifier.height(5.dp))
-                LazyFilterChipRow()
+                LazyFilterChipRow(
+                    chips = categoryOptions.map { SampleDestinations.categoryLabel(it) },
+                    selectedChip = SampleDestinations.categoryLabel(selectedCategory),
+                    onChipSelected = { label ->
+                        val selectedId = categoryOptions.firstOrNull {
+                            SampleDestinations.categoryLabel(it) == label
+                        } ?: SampleDestinations.ALL_CATEGORIES
+                        selectedCategory = selectedId
+                    }
+                )
             }
 
             if (filteredDestinations.isEmpty()) {

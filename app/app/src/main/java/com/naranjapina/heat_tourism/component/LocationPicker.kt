@@ -32,21 +32,14 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.naranjapina.heat_tourism.R
+import com.naranjapina.heat_tourism.data.SampleDestinations
 import com.naranjapina.heat_tourism.utils.LocationUtils
 
-/**
- * Componente que muestra la ubicacion detectada del usuario (Bloque B).
- * - Pide permisos de ACCESS_*_LOCATION en runtime.
- * - Lee la ubicacion via FusedLocationProviderClient.
- * - Hace reverse geocoding con Geocoder para mostrar un texto legible.
- *
- * Si no hay permiso o no se pudo geolocalizar, muestra un texto por defecto.
- */
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun LocationPicker(
     modifier: Modifier = Modifier,
-    fallbackLabel: String = "Park Guell, Barcelona",
+    fallbackLabel: String = "Plaza de Bolivar, Bogota",
     onChangeRequested: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -64,8 +57,12 @@ fun LocationPicker(
     LaunchedEffect(permissionsState.allPermissionsGranted) {
         val granted = permissionsState.permissions.any { it.status.isGranted }
         if (!granted) return@LaunchedEffect
-        val loc = LocationUtils.getCurrentLocation(context) ?: return@LaunchedEffect
-        val readable = LocationUtils.reverseGeocode(context, loc.latitude, loc.longitude)
+        val point = LocationUtils.getCurrentOrFallbackPoint(
+            context = context,
+            fallbackLng = SampleDestinations.BOGOTA_CENTER_LNG,
+            fallbackLat = SampleDestinations.BOGOTA_CENTER_LAT
+        )
+        val readable = LocationUtils.reverseGeocode(context, point.second, point.first)
         if (!readable.isNullOrBlank()) {
             label = readable
             detected = true

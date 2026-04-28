@@ -214,10 +214,10 @@ fun RouteScreen(navController: NavHostController) {
                         modifier = Modifier.weight(1f),
                         text = "Ver en mapa"
                     ) {
-                        // Bloque B: por defecto enseno la ruta hasta Sagrada Familia.
+                        // Bloque B: por defecto enseno la ruta hasta Monserrate.
                         // Cuando exista detalle de ruta real, pasar el id correspondiente.
                         navController.navigate(
-                            "${Screen.RouteOverview.name}?destinationId=sagrada-familia"
+                            "${Screen.RouteOverview.name}?destinationId=monserrate"
                         )
                     }
                 }

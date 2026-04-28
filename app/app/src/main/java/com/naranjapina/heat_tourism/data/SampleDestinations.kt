@@ -2,78 +2,107 @@ package com.naranjapina.heat_tourism.data
 
 import com.naranjapina.heat_tourism.data.model.MapPoint
 
-/**
- * Destinos turisticos de ejemplo para Barcelona.
- * Se usan para poblar el mapa principal y la pantalla de RouteOverview
- * mientras no exista un backend (Bloque B).
- */
 object SampleDestinations {
-    val barcelonaDestinations: List<MapPoint> = listOf(
+    const val BOGOTA_CENTER_LNG = -74.08175
+    const val BOGOTA_CENTER_LAT = 4.60971
+
+    val bogotaDestinations: List<MapPoint> = listOf(
         MapPoint(
-            id = "sagrada-familia",
-            name = "Sagrada Familia",
-            description = "Basilica disenada por Antoni Gaudi.",
-            longitude = 2.1744,
-            latitude = 41.4036,
+            id = "monserrate",
+            name = "Monserrate",
+            description = "Santuario y mirador iconico de Bogota.",
+            longitude = -74.0553,
+            latitude = 4.6054,
             category = "monumento"
         ),
         MapPoint(
-            id = "park-guell",
-            name = "Park Guell",
-            description = "Parque modernista con vistas a la ciudad.",
-            longitude = 2.1527,
-            latitude = 41.4145,
+            id = "museo-oro",
+            name = "Museo del Oro",
+            description = "Coleccion prehispanica emblematic de Colombia.",
+            longitude = -74.0721,
+            latitude = 4.6019,
             category = "parque"
         ),
         MapPoint(
-            id = "casa-batllo",
-            name = "Casa Batllo",
-            description = "Edificio modernista de Gaudi en el Passeig de Gracia.",
-            longitude = 2.1650,
-            latitude = 41.3917,
+            id = "plaza-bolivar",
+            name = "Plaza de Bolivar",
+            description = "Plaza historica principal del centro de Bogota.",
+            longitude = -74.0761,
+            latitude = 4.5981,
             category = "monumento"
         ),
         MapPoint(
-            id = "la-rambla",
-            name = "La Rambla",
-            description = "Avenida peatonal en el centro historico.",
-            longitude = 2.1734,
-            latitude = 41.3818,
+            id = "la-candelaria",
+            name = "La Candelaria",
+            description = "Barrio historico con arquitectura colonial.",
+            longitude = -74.0716,
+            latitude = 4.5968,
             category = "calle"
         ),
         MapPoint(
-            id = "barceloneta",
-            name = "Playa de la Barceloneta",
-            description = "Playa urbana mas conocida de la ciudad.",
-            longitude = 2.1925,
-            latitude = 41.3784,
-            category = "playa"
+            id = "parque-93",
+            name = "Parque de la 93",
+            description = "Zona gastronomica y de ocio en el norte de la ciudad.",
+            longitude = -74.0474,
+            latitude = 4.6762,
+            category = "gastronomia"
         ),
         MapPoint(
-            id = "camp-nou",
-            name = "Camp Nou",
-            description = "Estadio del FC Barcelona.",
-            longitude = 2.1228,
-            latitude = 41.3809,
+            id = "jardin-botanico",
+            name = "Jardin Botanico",
+            description = "Jardin con colecciones de flora andina.",
+            longitude = -74.1026,
+            latitude = 4.6630,
             category = "deporte"
         ),
         MapPoint(
-            id = "montjuic",
-            name = "Castillo de Montjuic",
-            description = "Fortaleza con vistas panoramicas al puerto.",
-            longitude = 2.1657,
-            latitude = 41.3633,
+            id = "simon-bolivar",
+            name = "Parque Simon Bolivar",
+            description = "Parque metropolitano y pulmon verde de Bogota.",
+            longitude = -74.0939,
+            latitude = 4.6581,
             category = "mirador"
         ),
         MapPoint(
-            id = "boqueria",
-            name = "Mercat de la Boqueria",
-            description = "Mercado emblematico en La Rambla.",
-            longitude = 2.1716,
-            latitude = 41.3818,
+            id = "usaquen",
+            name = "Usaquen",
+            description = "Barrio tradicional con mercado artesanal y restaurantes.",
+            longitude = -74.0314,
+            latitude = 4.6953,
             category = "gastronomia"
         )
     )
 
-    fun byId(id: String): MapPoint? = barcelonaDestinations.firstOrNull { it.id == id }
+    const val ALL_CATEGORIES = "all"
+
+    private val categoryLabels: Map<String, String> = mapOf(
+        ALL_CATEGORIES to "Todas",
+        "monumento" to "Monumentos",
+        "parque" to "Parques",
+        "calle" to "Barrios",
+        "gastronomia" to "Gastronomia",
+        "deporte" to "Naturaleza",
+        "mirador" to "Miradores"
+    )
+
+    fun categoryOptions(): List<String> =
+        listOf(ALL_CATEGORIES) + bogotaDestinations
+            .map { it.category }
+            .distinct()
+            .sorted()
+
+    fun categoryLabel(categoryId: String): String =
+        categoryLabels[categoryId] ?: categoryId.replaceFirstChar { it.uppercase() }
+
+    fun filterByCategory(
+        destinations: List<MapPoint>,
+        selectedCategory: String?
+    ): List<MapPoint> {
+        val normalizedCategory = selectedCategory ?: ALL_CATEGORIES
+        if (normalizedCategory == ALL_CATEGORIES) return destinations
+        return destinations.filter { it.category == normalizedCategory }
+    }
+
+
+    fun byId(id: String): MapPoint? = bogotaDestinations.firstOrNull { it.id == id }
 }

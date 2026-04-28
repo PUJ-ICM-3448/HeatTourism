@@ -15,10 +15,6 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import kotlin.coroutines.resume
 
-/**
- * Helper para acceso a la localizacion del usuario (Bloque B).
- * Usa FusedLocationProviderClient de Google Play Services.
- */
 object LocationUtils {
 
     fun hasLocationPermission(context: Context): Boolean {
@@ -31,10 +27,6 @@ object LocationUtils {
         return fine || coarse
     }
 
-    /**
-     * Pide la ubicacion actual del usuario (alta precision).
-     * Devuelve null si no hay permisos o si no se pudo obtener una lectura.
-     */
     @SuppressLint("MissingPermission")
     suspend fun getCurrentLocation(context: Context): Location? {
         if (!hasLocationPermission(context)) return null
@@ -46,10 +38,32 @@ object LocationUtils {
         }
     }
 
-    /**
-     * Reverse geocoding: dado lat/lng devuelve un texto legible
-     * tipo "Park Guell, Barcelona". Si falla devuelve null.
-     */
+    suspend fun getCurrentOrFallbackPoint(
+        context: Context,
+        fallbackLng: Double,
+        fallbackLat: Double,
+        maxDistanceKm: Double = 80.0
+    ): Pair<Double, Double> {
+        val loc = getCurrentLocation(context)
+        if (loc == null) return fallbackLng to fallbackLat
+
+        if (loc.hasAccuracy() && loc.accuracy > 2000f) {
+            return fallbackLng to fallbackLat
+        }
+
+        val distanceKm = haversineDistanceKm(
+            lat1 = loc.latitude,
+            lon1 = loc.longitude,
+            lat2 = fallbackLat,
+            lon2 = fallbackLng
+        )
+        return if (distanceKm <= maxDistanceKm) {
+            loc.longitude to loc.latitude
+        } else {
+            fallbackLng to fallbackLat
+        }
+    }
+
     suspend fun reverseGeocode(
         context: Context,
         latitude: Double,
@@ -66,5 +80,21 @@ object LocationUtils {
                 listOfNotNull(feature, locality).joinToString(", ").ifBlank { null }
             }
         }.getOrNull()
+    }
+
+    private fun haversineDistanceKm(
+        lat1: Double,
+        lon1: Double,
+        lat2: Double,
+        lon2: Double
+    ): Double {
+        val earthRadiusKm = 6371.0
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = kotlin.math.sin(dLat / 2) * kotlin.math.sin(dLat / 2) +
+            kotlin.math.cos(Math.toRadians(lat1)) * kotlin.math.cos(Math.toRadians(lat2)) *
+            kotlin.math.sin(dLon / 2) * kotlin.math.sin(dLon / 2)
+        val c = 2 * kotlin.math.atan2(kotlin.math.sqrt(a), kotlin.math.sqrt(1 - a))
+        return earthRadiusKm * c
     }
 }

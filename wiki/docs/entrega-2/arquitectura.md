@@ -60,28 +60,6 @@ com.naranjapina.heat_tourism/
     └── ...
 ```
 
-## Ramificación de Git
-
-```
-main      ─────────────●───────────────●  (releases estables)
-                       │               │
-develop   ─●──●──●──●──┴──●──●──●──●──●  (integración)
-           │  │  │  │     │  │  │  │
-           A  D  C  B     ...
-```
-
-- `main`: release / entregas oficiales.
-- `develop`: integración. Todas las features se mergean acá vía PR.
-- `feature/*`: ramas de trabajo por bloque.
-
-PRs mergeados para Entrega 2:
-
-| PR | Rama | Bloque |
-|---|---|---|
-| #10 | `feat/A-firebase-auth` | A — Autenticación |
-| #11 | `feature/sensores-docs` | D — Sensores y docs |
-| #12 | `feature/bloque-2` | B — Mapas y rutas |
-| #13 | `bloque-C` | C — Hardware |
 
 ## Permisos declarados
 
@@ -126,18 +104,3 @@ Las fotos tomadas con la cámara se guardan en el directorio privado de la app y
 
 Las API keys de Mapbox y la configuración de Firebase no se commitean. Mapbox se configura vía `gradle.properties` local + `MapboxConfig.kt`. Firebase usa `google-services.json` que sí está en el repo (es público por diseño según Google).
 
-## Estado del MVP
-
-| Funcionalidad | Estado |
-|---|:---:|
-| Registro y login | ✅ |
-| Persistencia de sesión | ✅ |
-| Foto de perfil con cámara/galería | ✅ |
-| Crear publicación con foto | ✅ |
-| Mapa con ubicación actual | ✅ |
-| Marcadores de destinos | ✅ |
-| Ruta entre 2 puntos | ✅ |
-| Acelerómetro (shake → refresh) | ✅ |
-| Temperatura ambiente | ✅ (con fallback) |
-| Diagramas evolucionados | ✅ |
-| Bono Mapbox | ✅ |

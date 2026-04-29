@@ -3,18 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Localización y mapas (Bloque B) -->
+    <!-- Localizacion y mapas (Bloque B) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Cámara y galería (Bloque C) -->
+    <!-- Camara y galeria (Bloque C) -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- Sensor de pasos / podómetro (Bloque D, opcional) -->
+    <!-- Sensor de pasos / podometro (Bloque D, opcional) -->
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <application
@@ -26,6 +26,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HeatTourism">
+        <meta-data
+            android:name="com.mapbox.maps.token"
+            android:value="@string/mapbox_access_token" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

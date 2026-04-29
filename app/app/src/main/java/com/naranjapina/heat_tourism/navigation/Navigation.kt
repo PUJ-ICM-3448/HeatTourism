@@ -145,9 +145,16 @@ fun NavigationStack() {
             RouteGroupScreen(navController)
         }
         composable(
-            route = Screen.RouteOverview.name
+            route = "${Screen.RouteOverview.name}?destinationId={destinationId}",
+            arguments = listOf(
+                navArgument("destinationId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
         ) {
-            RouteOverviewScreen(navController)
+            val destinationId = it.arguments?.getString("destinationId")
+            RouteOverviewScreen(navController, destinationId)
         }
         composable(
             route = Screen.Searcher.name

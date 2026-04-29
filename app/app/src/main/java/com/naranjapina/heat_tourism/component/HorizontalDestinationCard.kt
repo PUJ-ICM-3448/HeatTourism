@@ -6,11 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +34,8 @@ import com.naranjapina.heat_tourism.navigation.Screen
 fun HorizontalDestinationCard(
     modifier: Modifier = Modifier,
     navController: NavController,
-    data: DestinationCardData
+    data: DestinationCardData,
+    onClick: (() -> Unit)? = null
 ) {
     val (imgUrl, contentDescription, destinationScore, destinationName) = data
 
@@ -45,7 +44,9 @@ fun HorizontalDestinationCard(
             .shadow(3.dp, shape = RoundedCornerShape(15.dp))
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White)
-            .clickable(onClick = {navController.navigate(Screen.Route.name)}),
+            .clickable(onClick = {
+                onClick?.invoke() ?: navController.navigate(Screen.Route.name)
+            }),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Mapea la raíz de archivos internos para cubrir todas las capturas temporales -->
+    <files-path name="internal_files" path="." />
+</paths>

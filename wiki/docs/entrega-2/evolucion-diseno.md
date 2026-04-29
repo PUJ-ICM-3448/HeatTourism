@@ -165,21 +165,4 @@ Estos casos de uso técnicos son los que pide la rúbrica de Entrega 2.
 - **Temperatura ambiente** (`TYPE_AMBIENT_TEMPERATURE`): widget que compara temperatura local vs destino y sugiere qué ropa llevar. Fallback elegante si el sensor no está disponible.
 - Diagramas y documentación actualizados.
 
----
 
-## 6. Resumen de qué entra en cada entrega
-
-| Bloque del modelo | Entrega 1 | Entrega 2 | Entrega 3 |
-|---|:---:|:---:|:---:|
-| Modelo conceptual | ✅ Diseño | ✅ Corregido | — |
-| Autenticación | — | ✅ Firebase | — |
-| Hardware (cámara/galería/storage) | — | ✅ | — |
-| Sensores | — | ✅ Acelerómetro + Temperatura | — |
-| Mapas + localización | — | ✅ Mapbox | — |
-| Rutas entre 2 puntos | — | ✅ Directions API | — |
-| Heat map agregado | Diseñado | — | 🔜 |
-| Sistema de amigos | Diseñado | — | 🔜 |
-| Comentarios y reacciones | Diseñado | — | 🔜 |
-| Alertas grupales y check-in | Diseñado | — | 🔜 |
-| CRUD rutas (Coordinador) | Diseñado | — | 🔜 |
-| Patrocinio (Empresa) | Diseñado | — | 🔜 |

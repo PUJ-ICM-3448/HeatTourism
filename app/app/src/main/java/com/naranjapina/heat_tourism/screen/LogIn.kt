@@ -1,5 +1,6 @@
 package com.naranjapina.heat_tourism.screen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,14 +40,23 @@ import com.naranjapina.heat_tourism.component.GradientText
 import com.naranjapina.heat_tourism.component.InputText
 import com.naranjapina.heat_tourism.component.TextDivider
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
-fun LogInScreen(navController: NavHostController) {
+fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) {
     var email by remember {
         mutableStateOf("")
     }
     var password by remember {
         mutableStateOf("")
+    }
+
+    val currentUser by authViewModel.currentUser.collectAsState()
+    LaunchedEffect(
+        currentUser
+    ) {
+        if(currentUser != null)
+            navController.navigate(Screen.Home.name)
     }
 
     Scaffold(
@@ -106,7 +118,8 @@ fun LogInScreen(navController: NavHostController) {
                                 email = it
                             },
                             placeholder = "tu@email.com",
-                            icon = Icons.Outlined.Email
+                            icon = Icons.Outlined.Email,
+                            enabled = !authViewModel.isLoading
                         )
 
                         InputText(
@@ -116,7 +129,9 @@ fun LogInScreen(navController: NavHostController) {
                                 password = it
                             },
                             placeholder = "Mínimo 8 caracteres",
-                            icon = Icons.Outlined.Lock
+                            icon = Icons.Outlined.Lock,
+                            enabled = !authViewModel.isLoading,
+                            isSecret = true
                         )
 
                         Text(
@@ -126,14 +141,30 @@ fun LogInScreen(navController: NavHostController) {
                             textAlign = TextAlign.Right
                         )
 
+                        if(authViewModel.feedbackMessage != null) {
+                            Text(
+                                text = authViewModel.feedbackMessage!!,
+                                color = colorResource(R.color.red_400),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
-                            text="Iniciar sesión"
-                        ) { navController.navigate(Screen.Home.name) }
+                            text="Iniciar sesión",
+                            enabled = !authViewModel.isLoading
+                        ) {
+                            val logged = authViewModel.sigInUser(
+                                email,
+                                password
+                            );
+                        }
 
                         TextDivider("o continúa con")
 
-                        GoogleButton()
+                        GoogleButton(
+                            enabled = !authViewModel.isLoading
+                        )
 
                         Row(
                             horizontalArrangement = Arrangement.Center,

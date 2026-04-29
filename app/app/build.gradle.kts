@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     kotlin("plugin.serialization") version "1.9.23"
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -38,6 +40,11 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
 }
 
 dependencies {
@@ -65,4 +72,17 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:3.4.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
+    // Bloque B - Mapas + Localizacion + Rutas
+    implementation(libs.mapbox.android)
+    implementation(libs.play.services.location)
+    implementation(libs.accompanist.permissions)
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
 }

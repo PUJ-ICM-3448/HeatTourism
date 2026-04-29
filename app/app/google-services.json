@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "841988693985",
+    "project_id": "heat-tourism",
+    "storage_bucket": "heat-tourism.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:841988693985:android:3e046182551f8c1957bca0",
+        "android_client_info": {
+          "package_name": "com.naranjapina.heat_tourism"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApIFPME-nWDR8aksyB3_oZ324iWZb3duE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

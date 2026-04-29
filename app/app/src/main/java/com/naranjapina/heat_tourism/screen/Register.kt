@@ -18,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +39,13 @@ import com.naranjapina.heat_tourism.component.GradientText
 import com.naranjapina.heat_tourism.component.InputText
 import com.naranjapina.heat_tourism.component.TextDivider
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
-fun RegisterScreen(navController: NavHostController) {
+fun RegisterScreen(
+    authViewModel: AuthViewModel,
+    navController: NavHostController
+) {
     var email by remember {
         mutableStateOf("")
     }
@@ -48,6 +54,14 @@ fun RegisterScreen(navController: NavHostController) {
     }
     var password by remember {
         mutableStateOf("")
+    }
+
+    val currentUser by authViewModel.currentUser.collectAsState()
+    LaunchedEffect(
+        currentUser
+    ) {
+        if(currentUser != null)
+            navController.navigate(Screen.Home.name)
     }
 
     Scaffold(
@@ -109,7 +123,8 @@ fun RegisterScreen(navController: NavHostController) {
                                 name = it
                             },
                             placeholder = "Tu nombre",
-                            icon = Icons.Outlined.Person
+                            icon = Icons.Outlined.Person,
+                            enabled = !authViewModel.isLoading
                         )
                         InputText(
                             label = "Correo Electronico",
@@ -118,7 +133,8 @@ fun RegisterScreen(navController: NavHostController) {
                                 email = it
                             },
                             placeholder = "tu@email.com",
-                            icon = Icons.Outlined.Email
+                            icon = Icons.Outlined.Email,
+                            enabled = !authViewModel.isLoading
                         )
 
                         InputText(
@@ -128,17 +144,35 @@ fun RegisterScreen(navController: NavHostController) {
                                 password = it
                             },
                             placeholder = "Mínimo 8 caracteres",
-                            icon = Icons.Outlined.Lock
+                            icon = Icons.Outlined.Lock,
+                            isSecret = true,
+                            enabled = !authViewModel.isLoading
                         )
+
+                        if(authViewModel.feedbackMessage != null) {
+                            Text(
+                                text = authViewModel.feedbackMessage!!,
+                                color = colorResource(R.color.red_400),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
-                            text="Crear cuenta"
-                        ) {navController.navigate(Screen.Home.name)}
+                            text="Crear cuenta",
+                            enabled = !authViewModel.isLoading
+                        ) {
+                            // TODO: LUEGO AGREGAR CON LA DB BIEN EL NOMBRE
+                            authViewModel.signUpUser(
+                                email,
+                                password
+                            );
+                        }
 
                         TextDivider("o registrate con")
 
-                        GoogleButton()
+                        GoogleButton(
+                            enabled = !authViewModel.isLoading)
 
                         Row(
                             horizontalArrangement = Arrangement.Center,

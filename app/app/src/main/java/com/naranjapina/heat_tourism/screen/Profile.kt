@@ -22,6 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,9 +44,19 @@ import com.naranjapina.heat_tourism.component.StatsRow
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
+fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController) {
+
+    val currentUser by authViewModel.currentUser.collectAsState();
+    LaunchedEffect(
+        currentUser
+    ) {
+        if(currentUser == null)
+            navController.navigate(Screen.LogIn.name)
+    }
+
     MenuBottonLayout(activeName = "profile", navController = navController) { paddingValues ->
         LazyColumn(
             modifier = Modifier.padding(
@@ -75,6 +88,10 @@ fun ProfileScreen(navController: NavHostController) {
                                 .background(
                                     color = Color.White.copy(.8f),
                                     shape = RoundedCornerShape(100)
+                                ).clickable(
+                                    onClick = {
+                                        authViewModel.logOutUser();
+                                    }
                                 )
                                 .padding(10.dp)
                         )

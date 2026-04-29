@@ -1,4 +1,8 @@
 package com.naranjapina.heat_tourism.screen
+import android.widget.Space
+import android.widget.Toast
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -19,11 +25,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradient
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,22 +42,42 @@ import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.component.ActionCardGridItem
 import com.naranjapina.heat_tourism.component.CardRow
 import com.naranjapina.heat_tourism.component.DestinationCard
-import com.naranjapina.heat_tourism.component.DestinationCardData
 import com.naranjapina.heat_tourism.component.GradientButton
 import com.naranjapina.heat_tourism.component.GroupPublication
 import com.naranjapina.heat_tourism.component.JustInputText
+import com.naranjapina.heat_tourism.component.TemperatureWidget
 import com.naranjapina.heat_tourism.component.LazyFilterChipRow
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
 import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
+import com.naranjapina.heat_tourism.utils.mockDestinations
+import com.naranjapina.heat_tourism.utils.mockPublications
+import com.naranjapina.heat_tourism.utils.rememberAmbientTemperature
+import com.naranjapina.heat_tourism.utils.rememberShakeDetector
+import kotlinx.coroutines.launch
 
 @Composable
 fun NoTravelHomeScreen(navController: NavHostController) {
     var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    var destinations by remember {
+        mutableStateOf(mockDestinations.shuffled().take(4))
+    }
+
+    rememberShakeDetector {
+        destinations = mockDestinations.shuffled().take(4)
+        scope.launch {
+            listState.animateScrollToItem(0)
+        }
+        Toast.makeText(context, "Feed actualizado 🔄", Toast.LENGTH_SHORT).show()
+    }
 
     MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .background(color = colorResource(R.color.beige))
                 .padding(0.dp, 0.dp, 0.dp, paddingValues.calculateBottomPadding())
@@ -92,19 +122,18 @@ fun NoTravelHomeScreen(navController: NavHostController) {
 
             }
 
-            val destinations = listOf(1, 2, 3, 4)
-            items(destinations.size) {
+            items(destinations, key = { it.destinationName }) { destination ->
                 DestinationCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(300.dp)
-                        .padding(horizontal = 15.dp, vertical = 8.dp),
-                    data = DestinationCardData(
-                        destinationName = "Bali, Indonesia",
-                        destinationScore = 4.783f,
-                        imgUrl = "https://www.outlooktravelmag.com/media/bali-1-1679062958.profileImage.2x-1536x884.webp",
-                        contentDescription = ""
-                    ),
+                        .padding(horizontal = 15.dp, vertical = 8.dp)
+                        .animateItem(
+                            fadeInSpec = tween(durationMillis = 500),
+                            fadeOutSpec = tween(durationMillis = 300),
+                            placementSpec = tween(durationMillis = 500)
+                        ),
+                    data = destination,
                     navController = navController
                 )
             }
@@ -124,9 +153,25 @@ fun NoTravelHomeScreen(navController: NavHostController) {
 
 @Composable
 fun TravelHomeScreen(navController: NavHostController) {
+    val context = LocalContext.current
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val ambientTemp = rememberAmbientTemperature()
+    var publications by remember {
+        mutableStateOf(mockPublications.shuffled().take(2))
+    }
+
+    rememberShakeDetector {
+        publications = mockPublications.shuffled().take(2)
+        scope.launch {
+            listState.animateScrollToItem(0)
+        }
+        Toast.makeText(context, "Publicaciones del grupo actualizadas 🔄", Toast.LENGTH_SHORT).show()
+    }
 
     MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .background(color = colorResource(R.color.beige))
                 .padding(0.dp, 0.dp, 0.dp, paddingValues.calculateBottomPadding())
@@ -219,6 +264,18 @@ fun TravelHomeScreen(navController: NavHostController) {
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
+                TemperatureWidget(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                        .fillMaxWidth(),
+                    state = ambientTemp,
+                    destinationName = "Barcelona",
+                    destinationTempC = 32f
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(15.dp))
                 CardRow(
                     modifier = Modifier
                         .padding(10.dp, 0.dp)
@@ -270,26 +327,26 @@ fun TravelHomeScreen(navController: NavHostController) {
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                Modifier.padding(15.dp, 0.dp),
-                    horizontalArrangement = Arrangement.spacedBy(15.dp)
-                ) {
-                    GroupPublication(
-                        modifier = Modifier.height(200.dp).weight(1f),
-                        imgUrl = "https://sagradafamiliatickets.tours/wp-content/uploads/2024/10/sagrada-familia-architecture-3.jpg",
-                        location = "Sagrada Familia",
-                        autorName = "Carlos R.",
-                        contentDescription = "",
-                        age = "15 min"
-                    )
-                    GroupPublication(
-                        modifier = Modifier.height(200.dp).weight(1f),
-                        imgUrl = "https://sagradafamiliatickets.tours/wp-content/uploads/2024/10/sagrada-familia-architecture-3.jpg",
-                        location = "Sagrada Familia",
-                        autorName = "Carlos R.",
-                        contentDescription = "",
-                        age = "15 min"
-                    )
+                Crossfade(
+                    targetState = publications,
+                    animationSpec = tween(durationMillis = 500),
+                    label = "publications"
+                ) { pubs ->
+                    Row(
+                        Modifier.padding(15.dp, 0.dp),
+                        horizontalArrangement = Arrangement.spacedBy(15.dp)
+                    ) {
+                        pubs.forEach { pub ->
+                            GroupPublication(
+                                modifier = Modifier.height(200.dp).weight(1f),
+                                imgUrl = pub.imgUrl,
+                                location = pub.location,
+                                autorName = pub.autorName,
+                                contentDescription = pub.contentDescription,
+                                age = pub.age
+                            )
+                        }
+                    }
                 }
             }
 

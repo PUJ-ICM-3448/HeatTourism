@@ -26,12 +26,14 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.naranjapina.heat_tourism.R
 
 @Composable
-fun InputText (label: String, value: String, placeholder: String, changeValue: (String) -> Unit, icon: ImageVector) {
+fun InputText (isSecret: Boolean = false, label: String, value: String, placeholder: String, enabled: Boolean = true, changeValue: (String) -> Unit, icon: ImageVector) {
     Column(
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
@@ -41,6 +43,10 @@ fun InputText (label: String, value: String, placeholder: String, changeValue: (
             fontSize = 18.sp
             )
         TextField(
+            visualTransformation =
+                if(isSecret) PasswordVisualTransformation()
+                else VisualTransformation.None,
+            enabled = enabled,
             value= value,
             placeholder = {
                 Text(placeholder)

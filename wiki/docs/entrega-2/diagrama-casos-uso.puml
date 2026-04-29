@@ -1,0 +1,115 @@
+@startuml HeatTourism-CasosDeUso-Entrega2
+
+title Heat Tourism — Casos de uso (Entrega 2 · mono-usuario)
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Turista" as T
+actor "Coordinador" as C
+actor "Empresa" as E
+actor "Sistema" as S <<sistema>>
+
+rectangle "Heat Tourism" {
+
+  package "Autenticacion · Bloque A" {
+    usecase "Registrarse con correo" as UC1
+    usecase "Iniciar sesion" as UC2
+    usecase "Cerrar sesion" as UC3
+    usecase "Mantener sesion activa" as UC4
+  }
+
+  package "Perfil y publicaciones · Bloque C" {
+    usecase "Ver perfil propio" as UC5
+    usecase "Tomar foto con la camara" as UC6
+    usecase "Seleccionar foto de la galeria" as UC7
+    usecase "Cambiar foto de perfil" as UC8
+    usecase "Crear publicacion con foto" as UC9
+    usecase "Guardar imagen en almacenamiento interno" as UC10
+  }
+
+  package "Mapas y rutas · Bloque B" {
+    usecase "Ver mapa con ubicacion actual" as UC11
+    usecase "Explorar destinos en el mapa" as UC12
+    usecase "Calcular ruta entre dos puntos" as UC13
+    usecase "Ver distancia y tiempo estimado" as UC14
+  }
+
+  package "Sensores · Bloque D" {
+    usecase "Refrescar feed agitando el celular" as UC15
+    usecase "Ver temperatura local vs destino" as UC16
+  }
+
+  package "Navegacion mono-usuario" {
+    usecase "Ver home sin viaje" as UC17
+    usecase "Ver home con viaje activo" as UC18
+    usecase "Buscar destinos" as UC19
+    usecase "Ver detalle de ruta" as UC20
+  }
+
+  package "Funcionalidades futuras (Entrega 3)" {
+    usecase "Comentar publicacion" as F1 <<futuro>>
+    usecase "Reaccionar a publicacion" as F2 <<futuro>>
+    usecase "Agregar amigos" as F3 <<futuro>>
+    usecase "Recibir alertas grupales" as F4 <<futuro>>
+    usecase "Hacer check-in en parada" as F5 <<futuro>>
+    usecase "Pagar reserva" as F6 <<futuro>>
+    usecase "Crear/editar rutas (CRUD)" as F7 <<futuro>>
+    usecase "Emitir alertas grupales" as F8 <<futuro>>
+    usecase "Llamado a lista" as F9 <<futuro>>
+    usecase "Gestionar perfil de empresa" as F10 <<futuro>>
+    usecase "Patrocinar destinos" as F11 <<futuro>>
+    usecase "Ver heat map agregado" as F12 <<futuro>>
+  }
+}
+
+' Relaciones del Turista
+T --> UC1
+T --> UC2
+T --> UC3
+T --> UC5
+T --> UC8
+T --> UC9
+T --> UC11
+T --> UC12
+T --> UC13
+T --> UC15
+T --> UC16
+T --> UC17
+T --> UC18
+T --> UC19
+T --> UC20
+
+UC8 ..> UC6 : <<include>>
+UC8 ..> UC7 : <<include>>
+UC9 ..> UC6 : <<include>>
+UC9 ..> UC7 : <<include>>
+UC9 ..> UC10 : <<include>>
+UC8 ..> UC10 : <<include>>
+UC13 ..> UC14 : <<include>>
+
+' Sistema
+S --> UC4
+
+' Casos de uso futuros
+T --> F1
+T --> F2
+T --> F3
+T --> F4
+T --> F5
+T --> F6
+T --> F12
+C --> F7
+C --> F8
+C --> F9
+E --> F10
+E --> F11
+
+note bottom
+  Entrega 2 = mono-usuario.
+  Solo el actor Turista esta implementado.
+  Coordinador y Empresa quedan disenados
+  para Entrega 3.
+end note
+
+@enduml

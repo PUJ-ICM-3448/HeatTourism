@@ -1,0 +1,355 @@
+@startuml HeatTourism-Entrega2
+
+title Heat Tourism — Diagrama de clases (Entrega 2)
+
+' ==================== ENUMERACIONES ====================
+package "Enumeraciones" {
+  enum TipoUsuario {
+    TURISTA
+    COORDINADOR
+    ADMIN_EMPRESA
+  }
+  enum EstadoViaje {
+    PLANEADO
+    EN_CURSO
+    FINALIZADO
+    CANCELADO
+  }
+  enum EstadoReserva {
+    PENDIENTE
+    CONFIRMADA
+    CANCELADA
+  }
+  enum MetodoPago {
+    TARJETA
+    PSE
+    TRANSFERENCIA
+    EFECTIVO
+  }
+  enum EstadoPago {
+    INICIADO
+    APROBADO
+    RECHAZADO
+    REEMBOLSADO
+  }
+  enum TipoAlerta {
+    VOLVER_AL_BUS
+    CAMBIO_DE_PUNTO
+    REUNION
+    EMERGENCIA
+    GENERAL
+  }
+  enum EstadoCheckIn {
+    PENDIENTE
+    VALIDADO
+    RECHAZADO
+  }
+  enum PreferenciaViaje {
+    PLAYA
+    MONTANIA
+    CULTURAL
+    GASTRONOMICO
+    AVENTURA
+    NATURALEZA
+  }
+}
+
+' ==================== USUARIOS ====================
+package "Usuarios y perfiles" {
+  class Usuario {
+    -id: String
+    -nombreCompleto: String
+    -username: String
+    -correo: String
+    -telefono: String
+    -fotoPerfilUrl: String
+    -tipo: TipoUsuario
+    -nacionalidad: String?
+    -preferenciasViaje: List<PreferenciaViaje>
+    -biografia: String
+    -ciudad: String
+    -pais: String
+    -totalViajes: int
+    -totalPosts: int
+    -codigoEmpleado: String?
+    -ubicacionCompartidaActiva: Boolean?
+    -cargo: String?
+    +actualizarPerfil(): void
+  }
+  note right of Usuario
+    Cambios respecto a Entrega 1:
+    - Sin passwordHash (Firebase Auth)
+    - Sin herencia: campo tipo
+      (TURISTA / COORDINADOR / ADMIN_EMPRESA)
+    - Datos de perfil consolidados
+      (eliminado PerfilUsuario aparte)
+  end note
+
+  class ListaAlcance <<futuro>> {
+    -id: String
+    -propietarioId: String
+    -nombre: String
+    -tipo: String
+    -descripcion: String
+    -miembrosIds: List<String>
+  }
+}
+
+Usuario "1" -- "0..*" ListaAlcance
+
+' ==================== MAPA Y LUGARES ====================
+package "Mapa y lugares" {
+  class Ubicacion {
+    -id: String
+    -latitud: double
+    -longitud: double
+    -direccionTexto: String
+    -ciudad: String
+    -pais: String
+  }
+
+  class CategoriaLugar {
+    -id: String
+    -nombre: String
+    -iconoUrl: String
+  }
+
+  class Lugar {
+    -id: String
+    -nombre: String
+    -descripcion: String
+    -fotoPortadaUrl: String
+    -ubicacionId: String
+    -categoriasIds: List<String>
+  }
+
+  class MapaCalor <<futuro>> {
+    -id: String
+    -fechaGeneracion: String
+    -modo: String
+    +generar(): void
+  }
+
+  class ZonaCalor <<futuro>> {
+    -id: String
+    -intensidadActual: double
+    -intensidadHistorica: double
+    -totalPersonas: int
+    -scoreSentimiento: double
+  }
+
+  class MetricaZona <<futuro>> {
+    -id: String
+    -tipo: String
+    -valor: double
+    -fuente: String
+  }
+}
+
+Lugar "1" -- "1" Ubicacion
+Lugar "*" -- "*" CategoriaLugar
+MapaCalor "1" *-- "1..*" ZonaCalor
+ZonaCalor "1" *-- "1..*" MetricaZona
+ZonaCalor "0..*" -- "0..1" Lugar
+
+' ==================== TURISMO Y RUTAS ====================
+package "Turismo, rutas y compras" {
+  class EmpresaTurismo {
+    -id: String
+    -nombreComercial: String
+    -descripcion: String
+    -logoUrl: String
+    -telefonoContacto: String
+    -correoContacto: String
+    +publicarRuta(): void
+    +actualizarPerfil(): void
+  }
+
+  class RutaTuristica {
+    -id: String
+    -empresaId: String
+    -titulo: String
+    -descripcion: String
+    -duracionDias: int
+    -cupoMaximo: int
+    -precioBase: double
+    -estado: String
+    +agregarPunto(): void
+    +publicar(): void
+  }
+
+  class PuntoRuta {
+    -id: String
+    -rutaId: String
+    -lugarId: String
+    -orden: int
+    -titulo: String
+    -descripcion: String
+    -horaEstimada: String
+  }
+  note right of PuntoRuta
+    Cambio Entrega 2:
+    referencia a Lugar
+    (no duplica campos)
+  end note
+
+  class ViajeProgramado {
+    -id: String
+    -rutaId: String
+    -codigoViaje: String
+    -fechaInicio: String
+    -fechaFin: String
+    -cuposDisponibles: int
+    -precioFinal: double
+    -estado: EstadoViaje
+    +abrirReservas(): void
+    +iniciarViaje(): void
+    +finalizarViaje(): void
+  }
+
+  class Reserva {
+    -id: String
+    -viajeId: String
+    -turistaId: String
+    -grupoId: String?
+    -fechaReserva: String
+    -cantidadPersonas: int
+    -total: double
+    -estado: EstadoReserva
+  }
+
+  class Pago {
+    -id: String
+    -reservaId: String
+    -referencia: String
+    -monto: double
+    -metodo: MetodoPago
+    -estado: EstadoPago
+  }
+
+  class GrupoViaje <<futuro>> {
+    -id: String
+    -reservaId: String
+    -nombre: String
+    -descripcion: String
+    -codigoInvitacion: String
+  }
+
+  class MiembroGrupo <<futuro>> {
+    -id: String
+    -grupoId: String
+    -usuarioId: String
+    -rol: String
+    -fechaIngreso: String
+  }
+}
+
+EmpresaTurismo "1" *-- "0..*" RutaTuristica
+RutaTuristica "1" *-- "1..*" PuntoRuta
+PuntoRuta "*" -- "1" Lugar
+RutaTuristica "1" -- "0..*" ViajeProgramado
+ViajeProgramado "1" -- "0..*" Reserva
+Reserva "1" -- "1" Pago
+Reserva "1" -- "0..1" GrupoViaje
+GrupoViaje "1" *-- "1..*" MiembroGrupo
+Usuario "1" -- "0..*" Reserva : crea
+Usuario "1" -- "0..*" MiembroGrupo
+
+' ==================== CONTENIDO SOCIAL ====================
+package "Contenido social" {
+  class Publicacion {
+    -id: String
+    -autorId: String
+    -lugarId: String?
+    -alcanceId: String?
+    -descripcion: String
+    -fechaPublicacion: String
+    -esDeViaje: boolean
+    +publicar(): void
+    +editarDescripcion(): void
+  }
+
+  class ArchivoMultimedia {
+    -id: String
+    -publicacionId: String
+    -urlArchivo: String
+    -tipo: String
+  }
+
+  class Comentario <<futuro>> {
+    -id: String
+    -publicacionId: String
+    -autorId: String
+    -texto: String
+    -fechaComentario: String
+  }
+
+  class Reaccion <<futuro>> {
+    -id: String
+    -publicacionId: String
+    -autorId: String
+    -tipo: String
+    -fechaReaccion: String
+  }
+}
+
+Usuario "1" -- "0..*" Publicacion : escribe
+Publicacion "1" *-- "1..*" ArchivoMultimedia
+Publicacion "1" -- "0..*" Comentario
+Publicacion "1" -- "0..*" Reaccion
+Publicacion "*" -- "0..1" Lugar
+Publicacion "*" -- "0..1" ListaAlcance : visible para
+
+' ==================== OPERACION DEL VIAJE ====================
+package "Operacion del viaje" {
+  class Notificacion {
+    -id: String
+    -destinatarioId: String
+    -titulo: String
+    -cuerpo: String
+    -fechaEnvio: String
+    -leida: boolean
+  }
+
+  class CheckIn {
+    -id: String
+    -viajeId: String
+    -turistaId: String
+    -fechaHora: String
+    -estado: EstadoCheckIn
+    -observacion: String
+    +aprobar(): void
+    +rechazar(): void
+  }
+
+  class AlertaGrupo <<futuro>> {
+    -id: String
+    -grupoId: String
+    -titulo: String
+    -mensaje: String
+    -tipo: TipoAlerta
+    +enviar(): void
+  }
+
+  class LlamadoLista <<futuro>> {
+    -id: String
+    -viajeId: String
+    -fechaInicio: String
+    -motivo: String
+    +iniciar(): void
+    +cerrar(): void
+  }
+}
+
+Usuario "1" -- "0..*" Notificacion
+ViajeProgramado "1" -- "0..*" CheckIn
+GrupoViaje "1" -- "0..*" AlertaGrupo
+ViajeProgramado "1" -- "0..*" LlamadoLista
+
+note as N1
+  Clases marcadas <<futuro>>:
+  diseno listo, implementacion en Entrega 3
+  (modo multi-usuario y heat map agregado).
+end note
+
+@enduml

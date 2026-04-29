@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.sp
 import com.naranjapina.heat_tourism.R
 
 @Composable
-fun GoogleButton(text: String = "Continuar con Google") {
+fun GoogleButton(enabled: Boolean = true, text: String = "Continuar con Google") {
     Button(
+        enabled = enabled,
         modifier = Modifier.fillMaxWidth()
             .border(
                 width = 1.dp,

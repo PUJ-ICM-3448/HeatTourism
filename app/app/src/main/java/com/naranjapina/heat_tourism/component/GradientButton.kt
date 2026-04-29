@@ -18,8 +18,9 @@ import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
 
 @Composable
-fun GradientButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
+fun GradientButton(modifier: Modifier = Modifier, text: String, enabled: Boolean = true, onClick: () -> Unit) {
     Button(
+        enabled = enabled,
         onClick = onClick,
         content = {
             Text(text, modifier = Modifier.padding(2.dp, 0.dp))

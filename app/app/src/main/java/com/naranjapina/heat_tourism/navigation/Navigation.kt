@@ -1,6 +1,9 @@
 package com.naranjapina.heat_tourism.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,6 +26,7 @@ import com.naranjapina.heat_tourism.screen.RouteOverviewScreen
 import com.naranjapina.heat_tourism.screen.RouteScreen
 import com.naranjapina.heat_tourism.screen.SearcherScreen
 import com.naranjapina.heat_tourism.screen.TravelHomeScreen
+import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 import kotlin.collections.listOf
 
 enum class Screen {
@@ -47,8 +51,15 @@ enum class Screen {
 @Composable
 fun NavigationStack() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel();
 
-    NavHost (navController, startDestination= Screen.Register.name) {
+    val currentUser by authViewModel.currentUser.collectAsState();
+
+    NavHost (navController, startDestination=
+        if(currentUser == null)
+            Screen.Register.name
+        else Screen.Home.name
+    ) {
         composable(
             route = Screen.Buy.name
         ) {
@@ -88,7 +99,7 @@ fun NavigationStack() {
         composable(
             route = Screen.LogIn.name
         ) {
-            LogInScreen(navController)
+            LogInScreen(authViewModel, navController)
         }
         composable(
             route = Screen.LogInCoordinator.name
@@ -113,12 +124,15 @@ fun NavigationStack() {
         composable(
             route = Screen.Profile.name
         ) {
-            ProfileScreen(navController)
+            ProfileScreen(
+                authViewModel,
+                navController
+            )
         }
         composable(
             route = Screen.Register.name
         ) {
-            RegisterScreen(navController)
+            RegisterScreen(authViewModel, navController)
         }
         composable(
             route = Screen.Route.name

@@ -10,6 +10,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,7 +19,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -111,7 +111,8 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
         } else {
             Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
         }
-  
+    }
+
     val currentUser by authViewModel.currentUser.collectAsState();
     LaunchedEffect(
         currentUser
@@ -145,12 +146,13 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                                 .background(
                                     color = Color.White.copy(.8f),
                                     shape = RoundedCornerShape(100)
-                                ).clickable(
+                                )
+                                .padding(10.dp)
+                                .clickable(
                                     onClick = {
                                         authViewModel.logOutUser();
                                     }
                                 )
-                                .padding(10.dp)
                         )
                     }
 

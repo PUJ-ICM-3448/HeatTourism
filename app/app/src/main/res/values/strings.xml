@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Heat Tourism</string>
     <!-- Bloque B - Mapbox public token. Crearlo en https://account.mapbox.com -->
-    <string name="mapbox_access_token" translatable="false">PEGAR_AQUI_EL_PUBLIC_TOKEN</string>
+    <string name="mapbox_access_token" translatable="false">
+<!--        token here-->
+    </string>
 </resources>

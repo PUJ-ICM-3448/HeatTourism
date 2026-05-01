@@ -39,6 +39,7 @@ import com.naranjapina.heat_tourism.component.GradientButton
 import com.naranjapina.heat_tourism.component.GradientText
 import com.naranjapina.heat_tourism.component.InputText
 import com.naranjapina.heat_tourism.component.TextDivider
+import com.naranjapina.heat_tourism.component.brand.HeatTourismFullLogo
 import com.naranjapina.heat_tourism.navigation.Screen
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
@@ -68,25 +69,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                 .padding(36.dp, 48.dp)
                 .fillMaxSize(),
         ) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.icon),
-                    contentDescription = "Icono",
-                    modifier = Modifier.width(55.dp).height(55.dp)
-                )
-                Spacer(
-                    modifier = Modifier.width(15.dp)
-                )
-                GradientText(
-                    text="HeatTourism",
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
+            HeatTourismFullLogo()
 
             Column(
                 modifier = Modifier.fillMaxHeight(),

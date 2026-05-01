@@ -289,7 +289,7 @@ fun TravelHomeScreen(navController: NavHostController) {
                             subtitle = null
                         ),
                         ActionCardGridItem(
-                            "Check-in",
+                                "CheckIn",
                             painter = R.drawable.map,
                             color = R.color.orange_400,
                             subtitle = null

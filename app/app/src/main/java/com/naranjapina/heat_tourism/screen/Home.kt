@@ -1,4 +1,5 @@
 package com.naranjapina.heat_tourism.screen
+
 import android.widget.Toast
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -19,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.navigation.NavHostController
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.component.ActionCardGridItem
 import com.naranjapina.heat_tourism.component.CardRow
@@ -42,16 +43,16 @@ import com.naranjapina.heat_tourism.component.DestinationCard
 import com.naranjapina.heat_tourism.component.GradientButton
 import com.naranjapina.heat_tourism.component.GroupPublication
 import com.naranjapina.heat_tourism.component.JustInputText
-import com.naranjapina.heat_tourism.component.TemperatureWidget
 import com.naranjapina.heat_tourism.component.LazyFilterChipRow
+import com.naranjapina.heat_tourism.component.TemperatureWidget
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
-import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
+import com.naranjapina.heat_tourism.utils.RememberShakeDetector
 import com.naranjapina.heat_tourism.utils.mockDestinations
 import com.naranjapina.heat_tourism.utils.mockPublications
+import com.naranjapina.heat_tourism.utils.redToOrangeGradientBrush
 import com.naranjapina.heat_tourism.utils.rememberAmbientTemperature
-import com.naranjapina.heat_tourism.utils.rememberShakeDetector
 import kotlinx.coroutines.launch
 
 @Composable
@@ -64,7 +65,7 @@ fun NoTravelHomeScreen(navController: NavHostController) {
         mutableStateOf(mockDestinations.shuffled().take(4))
     }
 
-    rememberShakeDetector {
+    RememberShakeDetector {
         destinations = mockDestinations.shuffled().take(4)
         scope.launch {
             listState.animateScrollToItem(0)
@@ -84,9 +85,9 @@ fun NoTravelHomeScreen(navController: NavHostController) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
-                        .background(brush = RedToOrangeGradientBrush())
+                        .background(brush = redToOrangeGradientBrush())
                         .fillMaxWidth()
-                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp ,0.dp)
+                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
                         .padding(24.dp)
                 ) {
                     Text(
@@ -138,7 +139,9 @@ fun NoTravelHomeScreen(navController: NavHostController) {
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 GradientButton(
-                    modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .fillMaxWidth(),
                     text = "Ir a menu con Viaje"
                 ) {
                     navController.navigate("${Screen.Home.name}?state=travel")
@@ -158,7 +161,7 @@ fun TravelHomeScreen(navController: NavHostController) {
         mutableStateOf(mockPublications.shuffled().take(2))
     }
 
-    rememberShakeDetector {
+    RememberShakeDetector {
         publications = mockPublications.shuffled().take(2)
         scope.launch {
             listState.animateScrollToItem(0)
@@ -178,9 +181,9 @@ fun TravelHomeScreen(navController: NavHostController) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
-                        .background(brush = RedToOrangeGradientBrush())
+                        .background(brush = redToOrangeGradientBrush())
                         .fillMaxWidth()
-                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp ,0.dp)
+                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
                         .padding(24.dp)
                 ) {
                     Row(
@@ -188,7 +191,7 @@ fun TravelHomeScreen(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column() {
+                        Column {
                             Text(
                                 text = "Viaje activo",
                                 color = Color.LightGray,
@@ -207,8 +210,7 @@ fun TravelHomeScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .clip(RoundedCornerShape(15.dp))
                                 .background(colorResource(R.color.neutral_100).copy(alpha = 0.25f))
-                                .padding(10.dp)
-                            ,
+                                .padding(10.dp),
                             fontSize = 14.sp,
                         )
                     }
@@ -243,7 +245,8 @@ fun TravelHomeScreen(navController: NavHostController) {
                                 .background(colorResource(R.color.neutral_200).copy(.35f))
                         ) {
                             HorizontalDivider(
-                                modifier = Modifier.weight(2f)
+                                modifier = Modifier
+                                    .weight(2f)
                                     .clip(RoundedCornerShape(5.dp)),
                                 color = Color.White,
                                 thickness = 10.dp
@@ -286,7 +289,7 @@ fun TravelHomeScreen(navController: NavHostController) {
                             subtitle = null
                         ),
                         ActionCardGridItem(
-                                "CheckIn",
+                            "CheckIn",
                             painter = R.drawable.map,
                             color = R.color.orange_400,
                             subtitle = null
@@ -335,7 +338,9 @@ fun TravelHomeScreen(navController: NavHostController) {
                     ) {
                         pubs.forEach { pub ->
                             GroupPublication(
-                                modifier = Modifier.height(200.dp).weight(1f),
+                                modifier = Modifier
+                                    .height(200.dp)
+                                    .weight(1f),
                                 imgUrl = pub.imgUrl,
                                 location = pub.location,
                                 autorName = pub.autorName,
@@ -350,7 +355,9 @@ fun TravelHomeScreen(navController: NavHostController) {
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 GradientButton(
-                    modifier = Modifier.padding(15.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .fillMaxWidth(),
                     text = "Volver a menu sin Viaje"
                 ) {
                     navController.navigate(Screen.Home.name)

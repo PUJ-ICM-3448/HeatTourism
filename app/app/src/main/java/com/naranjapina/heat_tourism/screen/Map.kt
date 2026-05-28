@@ -1,18 +1,17 @@
 package com.naranjapina.heat_tourism.screen
 
 import android.Manifest
-import android.graphics.Color.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -36,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -53,8 +53,8 @@ import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
-import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.plugin.locationcomponent.createDefault2DPuck
+import com.mapbox.maps.plugin.locationcomponent.location
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.component.LazyFilterChipRow
 import com.naranjapina.heat_tourism.data.SampleDestinations
@@ -142,9 +142,9 @@ fun MapScreen(navController: NavHostController) {
                 selected?.let { point ->
                     Box(
                         modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = paddingValues.calculateBottomPadding() + 8.dp)
-                            .fillMaxWidth()
+                          .align(Alignment.BottomCenter)
+                          .padding(bottom = paddingValues.calculateBottomPadding() + 8.dp)
+                          .fillMaxWidth()
                     ) {
                         DestinationCard(
                             point = point,
@@ -167,8 +167,8 @@ fun MapScreen(navController: NavHostController) {
 private fun TokenErrorOverlay() {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+          .fillMaxSize()
+          .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -186,14 +186,14 @@ private fun Header(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .bottomBorder(
-                strokeWidth = 1.dp,
-                color = colorResource(R.color.red_100)
-            )
-            .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
-            .padding(15.dp),
+          .fillMaxWidth()
+          .background(Color.White)
+          .bottomBorder(
+            strokeWidth = 1.dp,
+            color = colorResource(R.color.red_100)
+          )
+          .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
+          .padding(15.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -260,7 +260,7 @@ private fun MapboxBarcelonaMap(
                         markerManager.addClickListener { annotation ->
                             val data = annotation.getData()
                             val id = if (data is com.google.gson.JsonPrimitive) data.asString
-                                     else data?.toString()
+                            else data?.toString()
                             val match = destinations.firstOrNull { it.id == id }
                             if (match != null) onMarkerSelected(match)
                             true
@@ -272,7 +272,10 @@ private fun MapboxBarcelonaMap(
                     }
 
                     val longPress = OnMapLongClickListener { pressedPoint ->
-                        nearestDestination(destinations, pressedPoint)?.let(onDestinationLongPressed)
+                        nearestDestination(
+                            destinations,
+                            pressedPoint
+                        )?.let(onDestinationLongPressed)
                         true
                     }
                     gestures.addOnMapLongClickListener(longPress)
@@ -293,7 +296,7 @@ private fun MapboxBarcelonaMap(
                     locationPuck = createDefault2DPuck(withBearing = true)
                     puckBearing = PuckBearing.COURSE
                     puckBearingEnabled = true
-                    pulsingColor = parseColor("#2F80ED")
+                    pulsingColor = "#2F80ED".toColorInt()
                 }
                 destinationManager?.let { refreshDestinations(it, destinations) }
                 refreshUserLocation(userLocationManager, userLocationPoint)
@@ -302,8 +305,8 @@ private fun MapboxBarcelonaMap(
 
         Column(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 12.dp, bottom = 96.dp),
+              .align(Alignment.BottomEnd)
+              .padding(end = 12.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             MapControlButton(icon = Icons.Outlined.Add) {
@@ -395,10 +398,10 @@ private fun MapControlButton(
 ) {
     Box(
         modifier = Modifier
-            .size(44.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color.White.copy(alpha = 0.92f))
-            .clickable { onClick() },
+          .size(44.dp)
+          .clip(RoundedCornerShape(14.dp))
+          .background(Color.White.copy(alpha = 0.92f))
+          .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -416,10 +419,10 @@ private fun MapControlTextButton(
 ) {
     Box(
         modifier = Modifier
-            .size(44.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color.White.copy(alpha = 0.92f))
-            .clickable { onClick() },
+          .size(44.dp)
+          .clip(RoundedCornerShape(14.dp))
+          .background(Color.White.copy(alpha = 0.92f))
+          .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -468,11 +471,11 @@ private fun DestinationCard(
 ) {
     Column(
         modifier = Modifier
-            .padding(15.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
-            .padding(20.dp)
+          .padding(15.dp)
+          .fillMaxWidth()
+          .clip(RoundedCornerShape(20.dp))
+          .background(Color.White)
+          .padding(20.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -504,8 +507,8 @@ private fun DestinationCard(
             color = colorResource(R.color.red_400),
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
-                .padding(top = 12.dp)
-                .clickable { onSeeRoute() }
+              .padding(top = 12.dp)
+              .clickable { onSeeRoute() }
         )
     }
 }

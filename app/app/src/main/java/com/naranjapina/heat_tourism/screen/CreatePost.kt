@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.edit
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.naranjapina.heat_tourism.R
@@ -60,7 +61,7 @@ import com.naranjapina.heat_tourism.component.HorizontalDestinationCard
 import com.naranjapina.heat_tourism.component.LocationPicker
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.navigation.Screen
-import com.naranjapina.heat_tourism.utils.BeigeGradientBrush
+import com.naranjapina.heat_tourism.utils.beigeGradientBrush
 import com.naranjapina.heat_tourism.utils.bottomBorder
 import java.io.File
 import java.io.FileOutputStream
@@ -186,7 +187,7 @@ fun CreatePostScreen(navController: NavHostController) {
                         text = "Publicar"
                     ) {
                         if (imagePath != null) {
-                            prefs.edit().putString("last_post_image", imagePath).apply()
+                            prefs.edit { putString("last_post_image", imagePath) }
                             Toast.makeText(context, "Post Guardado", Toast.LENGTH_SHORT).show()
                             if (navController.previousBackStackEntry == null)
                                 navController.navigate(Screen.Home.name)
@@ -214,7 +215,7 @@ fun CreatePostScreen(navController: NavHostController) {
                             .fillMaxWidth()
                             .aspectRatio(1f)
                             .background(
-                                brush = BeigeGradientBrush(),
+                                brush = beigeGradientBrush(),
                                 shape = RoundedCornerShape(15.dp)
                             )
                             .border(

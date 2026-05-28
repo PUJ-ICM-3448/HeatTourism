@@ -1,15 +1,16 @@
 package com.naranjapina.heat_tourism.utils
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
+import com.naranjapina.heat_tourism.ui.theme.Beige
+import com.naranjapina.heat_tourism.ui.theme.MediumBeige
 
 @Composable
-fun RedToOrangeGradientBrush(): Brush {
+fun beigeGradientBrush(): Brush {
   return Brush.linearGradient(
     colors = listOf(
-      MaterialTheme.colorScheme.primary,
-      MaterialTheme.colorScheme.secondary
+      MediumBeige,
+      Beige
     ),
   )
 }

@@ -16,7 +16,7 @@ private const val SHAKE_THRESHOLD_GRAVITY = 2f
 private const val SHAKE_DEBOUNCE_MS = 1000L
 
 @Composable
-fun rememberShakeDetector(onShake: () -> Unit) {
+fun RememberShakeDetector(onShake: () -> Unit) {
     val context = LocalContext.current
     val currentOnShake by rememberUpdatedState(onShake)
 

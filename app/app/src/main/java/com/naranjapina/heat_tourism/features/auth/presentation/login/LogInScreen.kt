@@ -15,8 +15,6 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,13 +46,12 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
         mutableStateOf("")
     }
 
-    val currentUser by authViewModel.currentUser.collectAsState()
-    LaunchedEffect(
-        currentUser
-    ) {
-        if (currentUser != null)
-            navController.navigate(Screen.Home.name)
-    }
+//    LaunchedEffect(
+//        currentUser
+//    ) {
+//        if (currentUser != null)
+//            navController.navigate(Screen.Home.name)
+//    }
 
     Scaffold(
         containerColor = colorResource(R.color.beige)
@@ -98,7 +95,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
-                            enabled = !authViewModel.isLoading
+//                            enabled = !authViewModel.isLoading
                         )
 
                         AuthInputText(
@@ -109,7 +106,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             },
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
-                            enabled = !authViewModel.isLoading,
+//                            enabled = !authViewModel.isLoading,
                             isSecret = true
                         )
 
@@ -120,29 +117,29 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             textAlign = TextAlign.Right
                         )
 
-                        if (authViewModel.feedbackMessage != null) {
-                            Text(
-                                text = authViewModel.feedbackMessage!!,
-                                color = colorResource(R.color.red_400),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+//                        if (authViewModel.feedbackMessage != null) {
+//                            Text(
+//                                text = authViewModel.feedbackMessage!!,
+//                                color = colorResource(R.color.red_400),
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
 
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Iniciar sesión",
-                            enabled = !authViewModel.isLoading
+//                            enabled = !authViewModel.isLoading
                         ) {
-                            authViewModel.sigInUser(
-                                email,
-                                password
-                            )
+//                            authViewModel.sigInUser(
+//                                email,
+//                                password
+//                            )
                         }
 
                         TextDivider("o continúa con")
 
                         GoogleButton(
-                            enabled = !authViewModel.isLoading
+//                            enabled = !authViewModel.isLoading
                         )
 
                         Row(

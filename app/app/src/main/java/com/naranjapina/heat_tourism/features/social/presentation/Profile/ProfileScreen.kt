@@ -126,11 +126,11 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
         }
     }
 
-    val currentUser by authViewModel.currentUser.collectAsState()
+    val authState by authViewModel.state.collectAsState()
     LaunchedEffect(
-        currentUser
+        authState.user
     ) {
-        if (currentUser == null)
+        if (authState.user == null)
             navController.navigate(Screen.LogIn.name)
     }
 

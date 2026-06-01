@@ -47,11 +47,14 @@ fun RegisterScreen(
 ) {
     val state: RegisterState by viewModel.state.collectAsState()
 
-    val currentUser by authViewModel.currentUser.collectAsState()
     LaunchedEffect(
-        currentUser
+        state.user
     ) {
-        if (currentUser != null) onGoToHome()
+        if (state.user != null) {
+            onGoToHome()
+            authViewModel.onUpdateUser(state.user!!);
+        }
+
     }
 
     Scaffold(
@@ -96,7 +99,7 @@ fun RegisterScreen(
                             },
                             placeholder = "Tu nombre",
                             icon = Icons.Outlined.Person,
-                            enabled = !authViewModel.isLoading,
+                            enabled = !state.isLoading,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next // Esto pasa al siguiente input
@@ -110,7 +113,7 @@ fun RegisterScreen(
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
-                            enabled = !authViewModel.isLoading,
+                            enabled = !state.isLoading,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next // Esto pasa al siguiente input
@@ -126,16 +129,16 @@ fun RegisterScreen(
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
                             isSecret = true,
-                            enabled = !authViewModel.isLoading,
+                            enabled = !state.isLoading,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Done
                             )
                         )
 
-                        if (authViewModel.feedbackMessage != null) {
+                        if (state.error != null) {
                             Text(
-                                text = authViewModel.feedbackMessage!!,
+                                text = state.error!!,
                                 color = colorResource(R.color.red_400),
                                 textAlign = TextAlign.Center
                             )

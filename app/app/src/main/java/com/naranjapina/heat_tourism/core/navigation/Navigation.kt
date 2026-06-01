@@ -50,11 +50,11 @@ fun NavigationStack() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
 
-    val currentUser by authViewModel.currentUser.collectAsState()
+    val authState by authViewModel.state.collectAsState();
 
     NavHost(
         navController, startDestination =
-            if (currentUser == null)
+            if (authState.user == null)
                 Screen.LogIn.name
             else Screen.Home.name
     ) {

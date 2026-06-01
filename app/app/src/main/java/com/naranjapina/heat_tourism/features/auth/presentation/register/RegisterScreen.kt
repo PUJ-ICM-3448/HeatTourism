@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
@@ -22,6 +23,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,7 +95,11 @@ fun RegisterScreen(
                             },
                             placeholder = "Tu nombre",
                             icon = Icons.Outlined.Person,
-                            enabled = !authViewModel.isLoading
+                            enabled = !authViewModel.isLoading,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next // Esto pasa al siguiente input
+                            )
                         )
                         AuthInputText(
                             label = "Correo Electronico",
@@ -102,7 +109,11 @@ fun RegisterScreen(
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
-                            enabled = !authViewModel.isLoading
+                            enabled = !authViewModel.isLoading,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next // Esto pasa al siguiente input
+                            )
                         )
 
                         AuthInputText(
@@ -114,7 +125,11 @@ fun RegisterScreen(
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
                             isSecret = true,
-                            enabled = !authViewModel.isLoading
+                            enabled = !authViewModel.isLoading,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+                            )
                         )
 
                         if (authViewModel.feedbackMessage != null) {
@@ -130,7 +145,6 @@ fun RegisterScreen(
                             text = "Crear cuenta",
                             enabled = !state.isLoading
                         ) {
-                            // TODO: LUEGO AGREGAR CON LA DB BIEN EL NOMBRE
                             viewModel.onRegisterEvent()
                         }
 

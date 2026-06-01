@@ -66,11 +66,11 @@ class AuthRepo {
         email: String,
         password: String,
         fullName: String,
-        userName: String,
-        phone: String,
-        city: String,
-        country: String,
-        nationality: String
+        userName: String?,
+        phone: String?,
+        city: String?,
+        country: String?,
+        nationality: String?
     ): AuthUser {
         try {
             val req = auth.createUserWithEmailAndPassword(

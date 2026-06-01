@@ -6,11 +6,11 @@ data class AuthUser(
     val email: String,
     val roles: List<UserRole> = listOf(UserRole.TOURIST),
     val fullName: String = "",
-    val userName: String = "",
-    val phone: String = "",
+    val userName: String? = null,
+    val phone: String? = null,
     val avatarURL: String? = null,
 
     val nationality: String? = null,
-    val city: String = "",
-    val country: String = "",
+    val city: String? = null,
+    val country: String? = null,
 )

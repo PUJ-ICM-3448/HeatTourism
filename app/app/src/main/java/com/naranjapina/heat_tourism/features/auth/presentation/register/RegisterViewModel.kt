@@ -23,27 +23,6 @@ class RegisterViewModel (
     fun onFullNameChange(fullName: String) {
         _state.value = _state.value.copy(fullName = fullName)
     }
-
-    fun onUserNameChange(userName: String) {
-        _state.value = _state.value.copy(userName = userName)
-    }
-
-    fun onPhoneChange(phone: String) {
-        _state.value = _state.value.copy(phone = phone)
-    }
-
-    fun onNationalityChange(nationality: String) {
-        _state.value = _state.value.copy(nationality = nationality)
-    }
-
-    fun onCityChange(city: String) {
-        _state.value = _state.value.copy(city = city)
-    }
-
-    fun onCountryChange(country: String) {
-        _state.value = _state.value.copy(country = country)
-    }
-
     fun onPasswordChange(password: String) {
         _state.value = _state.value.copy(password = password)
     }
@@ -52,24 +31,14 @@ class RegisterViewModel (
         val currentEmail = _state.value.email
         val currentPassword = _state.value.password
         val currentFullName = _state.value.fullName
-        val currentUsername = _state.value.userName
-        val currentPhone = _state.value.phone
-        val currentNationality = _state.value.nationality
-        val currentCity = _state.value.city
-        val currentCountry = _state.value.country
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
                 val user = registerTouristUseCase(
-                    email = currentEmail!!,
-                    password = currentPassword!!,
-                    fullName = currentFullName!!,
-                    userName = currentUsername!!,
-                    phone = currentPhone!!,
-                    nationality = currentNationality!!,
-                    city = currentCity!!,
-                    country = currentCountry!!
+                    email = currentEmail,
+                    password = currentPassword,
+                    fullName = currentFullName
                 )
                 _state.update { it.copy(isLoading = false, isAuthenticated = true, user = user) }
             } catch (e: AuthException) {

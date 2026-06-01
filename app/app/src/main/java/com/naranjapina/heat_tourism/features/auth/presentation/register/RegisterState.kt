@@ -9,11 +9,6 @@ data class RegisterState(
 
     val email: String = "",
     val fullName: String = "",
-    val userName: String = "",
-    val phone: String = "",
-    val nationality: String = "",
-    val city: String = "",
-    val country: String = "",
     val password: String = "",
 
     val user: AuthUser? = null

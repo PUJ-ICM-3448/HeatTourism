@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -31,6 +32,7 @@ fun AuthInputText(
     placeholder: String,
     enabled: Boolean = true,
     changeValue: (String) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     icon: ImageVector
 ) {
     Column(
@@ -45,6 +47,7 @@ fun AuthInputText(
             visualTransformation =
                 if (isSecret) PasswordVisualTransformation()
                 else VisualTransformation.None,
+            keyboardOptions = keyboardOptions,
             enabled = enabled,
             value = value,
             placeholder = {

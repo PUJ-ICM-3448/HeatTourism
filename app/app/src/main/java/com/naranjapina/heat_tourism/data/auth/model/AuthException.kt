@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.data.model
+package com.naranjapina.heat_tourism.data.auth.model
 
 sealed class AuthException : Exception() {
     class InvalidCredentialsException : AuthException()

@@ -1,0 +1,88 @@
+package com.naranjapina.heat_tourism.features.auth.presentation.register
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.naranjapina.heat_tourism.data.auth.model.AuthException
+import com.naranjapina.heat_tourism.features.auth.domain.usecase.RegisterTouristUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class RegisterStateViewModel (
+    private val registerTouristUseCase: RegisterTouristUseCase = RegisterTouristUseCase()
+): ViewModel(
+) {
+    private val _state = MutableStateFlow(RegisterState())
+    val state = _state.asStateFlow()
+
+    fun onEmailChange(email: String) {
+        _state.value = _state.value.copy(email = email)
+    }
+
+    fun onFullNameChange(fullName: String) {
+        _state.value = _state.value.copy(fullName = fullName)
+    }
+
+    fun onUserNameChange(userName: String) {
+        _state.value = _state.value.copy(userName = userName)
+    }
+
+    fun onPhoneChange(phone: String) {
+        _state.value = _state.value.copy(phone = phone)
+    }
+
+    fun onNationalityChange(nationality: String) {
+        _state.value = _state.value.copy(nationality = nationality)
+    }
+
+    fun onCityChange(city: String) {
+        _state.value = _state.value.copy(city = city)
+    }
+
+    fun onCountryChange(country: String) {
+        _state.value = _state.value.copy(country = country)
+    }
+
+    fun onPasswordChange(password: String) {
+        _state.value = _state.value.copy(password = password)
+    }
+
+    fun onRegisterEvent() {
+        val currentEmail = _state.value.email
+        val currentPassword = _state.value.password
+        val currentFullName = _state.value.fullName
+        val currentUsername = _state.value.userName
+        val currentPhone = _state.value.phone
+        val currentNationality = _state.value.nationality
+        val currentCity = _state.value.city
+        val currentCountry = _state.value.country
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                val user = registerTouristUseCase(
+                    email = currentEmail!!,
+                    password = currentPassword!!,
+                    fullName = currentFullName!!,
+                    userName = currentUsername!!,
+                    phone = currentPhone!!,
+                    nationality = currentNationality!!,
+                    city = currentCity!!,
+                    country = currentCountry!!
+                )
+                _state.update { it.copy(isLoading = false, isAuthenticated = true, user = user) }
+            } catch (e: AuthException) {
+                val errorMessage = when (e) {
+                    is AuthException.InvalidCredentialsException -> "Correo o contraseña incorrectos."
+                    is AuthException.UserNotFoundException -> "Este usuario no está registrado."
+                    is AuthException.NetworkException -> "No hay conexión a internet."
+                    is AuthException.UnknownAuthException -> e.message ?: "Error inesperado."
+                }
+                _state.update { it.copy(isLoading = false, error = errorMessage) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+            }
+        }
+    }
+}

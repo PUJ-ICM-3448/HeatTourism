@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.features.auth.presentation.Register
+package com.naranjapina.heat_tourism.features.auth.presentation.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

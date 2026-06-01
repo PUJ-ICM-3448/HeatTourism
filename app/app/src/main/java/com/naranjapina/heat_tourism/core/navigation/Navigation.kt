@@ -9,8 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.naranjapina.heat_tourism.features.auth.presentation.LogIn.LogInScreen
-import com.naranjapina.heat_tourism.features.auth.presentation.Register.RegisterScreen
+import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
+import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
 import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ManageCompanyScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen

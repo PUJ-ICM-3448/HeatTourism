@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
@@ -22,6 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -94,7 +97,11 @@ fun LogInScreen(authViewModel: AuthViewModel,
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
-                            enabled = !state.isLoading
+                            enabled = !state.isLoading,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next // Esto pasa al siguiente input
+                            )
                         )
 
                         AuthInputText(
@@ -106,7 +113,11 @@ fun LogInScreen(authViewModel: AuthViewModel,
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
                             enabled = !state.isLoading,
-                            isSecret = true
+                            isSecret = true,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done // Esto pasa al siguiente input
+                            )
                         )
 
                         Text(

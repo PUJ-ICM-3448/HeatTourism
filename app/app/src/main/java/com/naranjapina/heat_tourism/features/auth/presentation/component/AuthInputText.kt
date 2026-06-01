@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.core.component
+package com.naranjapina.heat_tourism.features.auth.presentation.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.naranjapina.heat_tourism.R
 
 @Composable
-fun InputText(
+fun AuthInputText(
     isSecret: Boolean = false,
     label: String,
     value: String,

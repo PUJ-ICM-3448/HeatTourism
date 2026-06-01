@@ -19,47 +19,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.naranjapina.heat_tourism.R
-import com.naranjapina.heat_tourism.core.component.GoogleButton
 import com.naranjapina.heat_tourism.core.component.GradientButton
 import com.naranjapina.heat_tourism.core.component.GradientText
-import com.naranjapina.heat_tourism.core.component.InputText
 import com.naranjapina.heat_tourism.core.component.TextDivider
 import com.naranjapina.heat_tourism.core.component.brand.HeatTourismFullLogo
-import com.naranjapina.heat_tourism.core.navigation.Screen
+import com.naranjapina.heat_tourism.features.auth.presentation.component.AuthInputText
+import com.naranjapina.heat_tourism.features.auth.presentation.component.GoogleButton
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
 fun RegisterScreen(
+    viewModel: RegisterViewModel,
     authViewModel: AuthViewModel,
-    navController: NavHostController
+    onGoToLogin: () -> Unit,
+    onGoToHome: () -> Unit
 ) {
-    var email by remember {
-        mutableStateOf("")
-    }
-    var name by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
+    val state by viewModel.state.collectAsState()
 
     val currentUser by authViewModel.currentUser.collectAsState()
     LaunchedEffect(
         currentUser
     ) {
-        if (currentUser != null)
-            navController.navigate(Screen.Home.name)
+        if (currentUser != null) onGoToHome()
     }
 
     Scaffold(
@@ -96,32 +84,32 @@ fun RegisterScreen(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        InputText(
+                        AuthInputText(
                             label = "Nombre completo",
-                            value = name,
-                            changeValue = {
-                                name = it
+                            value = state.fullName.orEmpty(),
+                            changeValue = { it ->
+                                viewModel.onFullNameChange(it)
                             },
                             placeholder = "Tu nombre",
                             icon = Icons.Outlined.Person,
                             enabled = !authViewModel.isLoading
                         )
-                        InputText(
+                        AuthInputText(
                             label = "Correo Electronico",
-                            value = email,
-                            changeValue = {
-                                email = it
+                            value = state.email.orEmpty(),
+                            changeValue = { it ->
+                                viewModel.onEmailChange(it)
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
                             enabled = !authViewModel.isLoading
                         )
 
-                        InputText(
+                        AuthInputText(
                             label = "Contraseña",
-                            value = password,
-                            changeValue = {
-                                password = it
+                            value = state.password.orEmpty(),
+                            changeValue = { it ->
+                                viewModel.onPasswordChange(it)
                             },
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
@@ -140,19 +128,16 @@ fun RegisterScreen(
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Crear cuenta",
-                            enabled = !authViewModel.isLoading
+                            enabled = !state.isLoading
                         ) {
                             // TODO: LUEGO AGREGAR CON LA DB BIEN EL NOMBRE
-                            authViewModel.signUpUser(
-                                email,
-                                password
-                            )
+                            viewModel.onRegisterEvent()
                         }
 
                         TextDivider("o registrate con")
 
                         GoogleButton(
-                            enabled = !authViewModel.isLoading
+                            enabled = !state.isLoading
                         )
 
                         Row(
@@ -168,9 +153,7 @@ fun RegisterScreen(
                                 text = "Inicia sesión",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Normal,
-                                onClick = {
-                                    navController.navigate(Screen.LogIn.name)
-                                }
+                                onClick = onGoToLogin
                             )
                         }
                     }

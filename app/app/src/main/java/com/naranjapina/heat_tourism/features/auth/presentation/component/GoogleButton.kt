@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.core.component
+package com.naranjapina.heat_tourism.features.auth.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border

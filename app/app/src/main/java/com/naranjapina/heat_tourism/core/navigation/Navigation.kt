@@ -125,7 +125,11 @@ fun NavigationStack() {
         composable(
             route = Screen.Register.name
         ) {
-            RegisterScreen(authViewModel, navController)
+            RegisterScreen(authViewModel = authViewModel, viewModel = viewModel(), onGoToLogin = {
+                navController.navigate(Screen.LogIn.name)
+            }, onGoToHome = {
+                navController.navigate(Screen.Home.name)
+            })
         }
         composable(
             route = Screen.Route.name

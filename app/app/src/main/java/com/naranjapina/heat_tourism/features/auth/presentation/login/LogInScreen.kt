@@ -29,13 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.naranjapina.heat_tourism.R
-import com.naranjapina.heat_tourism.core.component.GoogleButton
 import com.naranjapina.heat_tourism.core.component.GradientButton
 import com.naranjapina.heat_tourism.core.component.GradientText
-import com.naranjapina.heat_tourism.core.component.InputText
 import com.naranjapina.heat_tourism.core.component.TextDivider
 import com.naranjapina.heat_tourism.core.component.brand.HeatTourismFullLogo
 import com.naranjapina.heat_tourism.core.navigation.Screen
+import com.naranjapina.heat_tourism.features.auth.presentation.component.AuthInputText
+import com.naranjapina.heat_tourism.features.auth.presentation.component.GoogleButton
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
@@ -89,7 +89,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        InputText(
+                        AuthInputText(
                             label = "Correo Electronico",
                             value = email,
                             changeValue = {
@@ -100,7 +100,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             enabled = !authViewModel.isLoading
                         )
 
-                        InputText(
+                        AuthInputText(
                             label = "Contraseña",
                             value = password,
                             changeValue = {

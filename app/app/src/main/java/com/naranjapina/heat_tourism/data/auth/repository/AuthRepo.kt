@@ -27,7 +27,7 @@ class AuthRepo {
 
                 try {
                     val result = db.collection("users")
-                        .whereEqualTo("auth_id", firebaseUser.uid)
+                        .whereEqualTo("authId", firebaseUser.uid)
                         .get()
                         .await()
 

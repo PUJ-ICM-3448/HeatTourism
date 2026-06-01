@@ -5,5 +5,6 @@ import com.naranjapina.heat_tourism.data.auth.model.AuthUser
 
 data class AuthState(
     val user: AuthUser? = null,
-    val authUser: FirebaseUser? = null
+    val authUser: FirebaseUser? = null,
+    val isLoading: Boolean = true
 )

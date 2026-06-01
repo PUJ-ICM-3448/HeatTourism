@@ -7,16 +7,14 @@ data class RegisterState(
     val isAuthenticated: Boolean = false,
     val error: String? = null,
 
-    // Text Input
-    val email: String? = null,
-    val fullName: String? = null,
-    val userName: String? = null,
-    val phone: String? = null,
-    val nationality: String? = null,
-    val city: String? = null,
-    val country: String? = null,
-
-    val password: String? = null,
+    val email: String = "",
+    val fullName: String = "",
+    val userName: String = "",
+    val phone: String = "",
+    val nationality: String = "",
+    val city: String = "",
+    val country: String = "",
+    val password: String = "",
 
     val user: AuthUser? = null
 )

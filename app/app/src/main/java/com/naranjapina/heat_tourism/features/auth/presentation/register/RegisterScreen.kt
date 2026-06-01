@@ -41,7 +41,7 @@ fun RegisterScreen(
     onGoToLogin: () -> Unit,
     onGoToHome: () -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
+    val state: RegisterState by viewModel.state.collectAsState()
 
     val currentUser by authViewModel.currentUser.collectAsState()
     LaunchedEffect(

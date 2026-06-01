@@ -8,7 +8,6 @@ data class LoginState(
     val error: String? = null,
 
     val email: String = "",
-    val fullName: String = "",
     val password: String = "",
 
     val user: AuthUser? = null

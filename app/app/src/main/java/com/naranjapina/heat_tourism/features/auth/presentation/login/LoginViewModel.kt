@@ -3,14 +3,14 @@ package com.naranjapina.heat_tourism.features.auth.presentation.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naranjapina.heat_tourism.data.auth.model.AuthException
-import com.naranjapina.heat_tourism.features.auth.domain.usecase.RegisterTouristUseCase
+import com.naranjapina.heat_tourism.features.auth.domain.usecase.LoginUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel (
-    private val registerTouristUseCase: RegisterTouristUseCase = RegisterTouristUseCase()
+    private val loginUseCase: LoginUseCase = LoginUseCase()
 ): ViewModel(
 ) {
     private val _state = MutableStateFlow(LoginState())
@@ -19,26 +19,20 @@ class LoginViewModel (
     fun onEmailChange(email: String) {
         _state.value = _state.value.copy(email = email)
     }
-
-    fun onFullNameChange(fullName: String) {
-        _state.value = _state.value.copy(fullName = fullName)
-    }
     fun onPasswordChange(password: String) {
         _state.value = _state.value.copy(password = password)
     }
 
-    fun onRegisterEvent() {
+    fun onLoginEvent() {
         val currentEmail = _state.value.email
         val currentPassword = _state.value.password
-        val currentFullName = _state.value.fullName
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val user = registerTouristUseCase(
+                val user = loginUseCase(
                     email = currentEmail,
-                    password = currentPassword,
-                    fullName = currentFullName
+                    password = currentPassword
                 )
                 _state.update { it.copy(isLoading = false, isAuthenticated = true, user = user) }
             } catch (e: AuthException) {

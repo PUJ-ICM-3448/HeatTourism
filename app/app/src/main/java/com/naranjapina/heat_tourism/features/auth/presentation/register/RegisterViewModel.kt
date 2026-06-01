@@ -3,14 +3,14 @@ package com.naranjapina.heat_tourism.features.auth.presentation.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naranjapina.heat_tourism.data.auth.model.AuthException
-import com.naranjapina.heat_tourism.features.auth.domain.usecase.RegisterTouristUseCase
+import com.naranjapina.heat_tourism.features.auth.domain.usecase.RegisterUsecase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RegisterViewModel (
-    private val registerTouristUseCase: RegisterTouristUseCase = RegisterTouristUseCase()
+    private val registerUsecase: RegisterUsecase = RegisterUsecase()
 ): ViewModel(
 ) {
     private val _state = MutableStateFlow(RegisterState())
@@ -35,7 +35,7 @@ class RegisterViewModel (
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val user = registerTouristUseCase(
+                val user = registerUsecase(
                     email = currentEmail,
                     password = currentPassword,
                     fullName = currentFullName

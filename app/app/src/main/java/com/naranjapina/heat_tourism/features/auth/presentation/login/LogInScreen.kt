@@ -15,10 +15,9 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -26,32 +25,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.core.component.GradientButton
 import com.naranjapina.heat_tourism.core.component.GradientText
 import com.naranjapina.heat_tourism.core.component.TextDivider
 import com.naranjapina.heat_tourism.core.component.brand.HeatTourismFullLogo
-import com.naranjapina.heat_tourism.core.navigation.Screen
 import com.naranjapina.heat_tourism.features.auth.presentation.component.AuthInputText
 import com.naranjapina.heat_tourism.features.auth.presentation.component.GoogleButton
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
-fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) {
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
+fun LogInScreen(authViewModel: AuthViewModel,
+                viewModel: LoginViewModel,
+                onGoToHome:() -> Unit,
+                onGoToRegister:() -> Unit,
+) {
+    val state: LoginState by viewModel.state.collectAsState()
 
-//    LaunchedEffect(
-//        currentUser
-//    ) {
-//        if (currentUser != null)
-//            navController.navigate(Screen.Home.name)
-//    }
+    LaunchedEffect(
+        state.user
+    ) {
+        if (state.user != null) {
+            onGoToHome()
+            authViewModel.onUpdateUser(state.user!!);
+        }
+
+    }
 
     Scaffold(
         containerColor = colorResource(R.color.beige)
@@ -89,24 +88,24 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                     ) {
                         AuthInputText(
                             label = "Correo Electronico",
-                            value = email,
-                            changeValue = {
-                                email = it
+                            value = state.email,
+                            changeValue = {it ->
+                                viewModel.onEmailChange(it)
                             },
                             placeholder = "tu@email.com",
                             icon = Icons.Outlined.Email,
-//                            enabled = !authViewModel.isLoading
+                            enabled = !state.isLoading
                         )
 
                         AuthInputText(
                             label = "Contraseña",
-                            value = password,
-                            changeValue = {
-                                password = it
+                            value = state.password,
+                            changeValue = {it ->
+                                viewModel.onPasswordChange(it)
                             },
                             placeholder = "Mínimo 8 caracteres",
                             icon = Icons.Outlined.Lock,
-//                            enabled = !authViewModel.isLoading,
+                            enabled = !state.isLoading,
                             isSecret = true
                         )
 
@@ -117,29 +116,26 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                             textAlign = TextAlign.Right
                         )
 
-//                        if (authViewModel.feedbackMessage != null) {
-//                            Text(
-//                                text = authViewModel.feedbackMessage!!,
-//                                color = colorResource(R.color.red_400),
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
+                        if (state.error != null) {
+                            Text(
+                                text = state.error!!,
+                                color = colorResource(R.color.red_400),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         GradientButton(
                             modifier = Modifier.fillMaxWidth(),
                             text = "Iniciar sesión",
-//                            enabled = !authViewModel.isLoading
+                            enabled = !state.isLoading
                         ) {
-//                            authViewModel.sigInUser(
-//                                email,
-//                                password
-//                            )
+                            viewModel.onLoginEvent()
                         }
 
                         TextDivider("o continúa con")
 
                         GoogleButton(
-//                            enabled = !authViewModel.isLoading
+                            enabled = !state.isLoading
                         )
 
                         Row(
@@ -156,9 +152,7 @@ fun LogInScreen(authViewModel: AuthViewModel, navController: NavHostController) 
                                 text = "Regístrate",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Normal,
-                                onClick = {
-                                    navController.navigate(Screen.Register.name)
-                                }
+                                onClick = onGoToRegister
                             )
                         }
                     }

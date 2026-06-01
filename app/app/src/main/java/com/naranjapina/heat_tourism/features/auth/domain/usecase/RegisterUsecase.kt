@@ -4,7 +4,7 @@ import com.naranjapina.heat_tourism.data.auth.model.AuthUser
 import com.naranjapina.heat_tourism.data.auth.repository.AuthRepo
 
 
-class RegisterTouristUseCase(private val repo: AuthRepo = AuthRepo()) {
+class RegisterUsecase(private val repo: AuthRepo = AuthRepo()) {
   suspend operator fun invoke(
     email: String,
     password: String,

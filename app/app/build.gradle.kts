@@ -85,5 +85,7 @@ dependencies {
     // https://firebase.google.com/docs/android/setup#available-libraries
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.storage)
 
 }

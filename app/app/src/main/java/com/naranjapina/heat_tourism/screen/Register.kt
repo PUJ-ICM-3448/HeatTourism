@@ -39,6 +39,7 @@ import com.naranjapina.heat_tourism.component.GradientText
 import com.naranjapina.heat_tourism.component.InputText
 import com.naranjapina.heat_tourism.component.TextDivider
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.navigation.homeRoute
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 @Composable
@@ -61,7 +62,7 @@ fun RegisterScreen(
         currentUser
     ) {
         if(currentUser != null)
-            navController.navigate(Screen.Home.name)
+            navController.navigate(homeRoute())
     }
 
     Scaffold(
@@ -164,6 +165,7 @@ fun RegisterScreen(
                         ) {
                             // TODO: LUEGO AGREGAR CON LA DB BIEN EL NOMBRE
                             authViewModel.signUpUser(
+                                name,
                                 email,
                                 password
                             );

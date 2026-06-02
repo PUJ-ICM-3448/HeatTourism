@@ -10,14 +10,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naranjapina.heat_tourism.screen.BuyScreen
+import com.naranjapina.heat_tourism.screen.ChatScreen
+import com.naranjapina.heat_tourism.screen.ChatsListScreen
 import com.naranjapina.heat_tourism.screen.CheckInScreen
 import com.naranjapina.heat_tourism.screen.CompanyScreen
 import com.naranjapina.heat_tourism.screen.CreatePostScreen
+import com.naranjapina.heat_tourism.screen.FriendScreen
 import com.naranjapina.heat_tourism.screen.LogInCoordinatorScreen
 import com.naranjapina.heat_tourism.screen.LogInScreen
 import com.naranjapina.heat_tourism.screen.ManageCompanyScreen
 import com.naranjapina.heat_tourism.screen.MapScreen
 import com.naranjapina.heat_tourism.screen.NoTravelHomeScreen
+import com.naranjapina.heat_tourism.screen.NotificationsScreen
 import com.naranjapina.heat_tourism.screen.PostScreen
 import com.naranjapina.heat_tourism.screen.ProfileScreen
 import com.naranjapina.heat_tourism.screen.RegisterScreen
@@ -45,8 +49,15 @@ enum class Screen {
     LogInCoordinator,
     RouteGroup,
     CheckIn,
-    RouteOverview
+    RouteOverview,
+    Friend,
+    ChatsList,
+    Chat,
+    Notifications
 }
+
+fun homeRoute(state: String? = null): String =
+    if (state == "travel") "${Screen.Home.name}/travel" else Screen.Home.name
 
 @Composable
 fun NavigationStack() {
@@ -58,12 +69,29 @@ fun NavigationStack() {
     NavHost (navController, startDestination=
         if(currentUser == null)
             Screen.Register.name
-        else Screen.Home.name
+        else homeRoute()
     ) {
         composable(
             route = Screen.Buy.name
         ) {
             BuyScreen(navController)
+        }
+        composable(
+            route = Screen.Chat.name + "/{otherUserId}",
+            arguments = listOf(
+                navArgument("otherUserId") {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+        ) {
+            val otherUserId = it.arguments?.getString("otherUserId").orEmpty()
+            ChatScreen(navController, otherUserId)
+        }
+        composable(
+            route = Screen.ChatsList.name
+        ) {
+            ChatsListScreen(navController)
         }
         composable(
             route = Screen.CheckIn.name
@@ -81,20 +109,19 @@ fun NavigationStack() {
             CreatePostScreen(navController)
         }
         composable(
-            route = "${Screen.Home.name}?state={state}",
-            arguments = listOf(
-                navArgument("state") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
+            route = Screen.Friend.name
         ) {
-            val state = it.arguments?.getString("state")
-
-            if(state == "travel")
-                TravelHomeScreen(navController)
-            else
-                NoTravelHomeScreen(navController)
+            FriendScreen(navController)
+        }
+        composable(
+            route = Screen.Home.name
+        ) {
+            NoTravelHomeScreen(navController)
+        }
+        composable(
+            route = "${Screen.Home.name}/travel"
+        ) {
+            TravelHomeScreen(navController)
         }
         composable(
             route = Screen.LogIn.name
@@ -115,6 +142,11 @@ fun NavigationStack() {
             route = Screen.Map.name
         ) {
             MapScreen(navController)
+        }
+        composable(
+            route = Screen.Notifications.name
+        ) {
+            NotificationsScreen(navController)
         }
         composable(
             route = Screen.Post.name

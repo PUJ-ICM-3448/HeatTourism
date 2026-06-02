@@ -49,6 +49,7 @@ import com.naranjapina.heat_tourism.component.GradientButton
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.navigation.homeRoute
 
 @Composable
 fun RouteScreen(navController: NavHostController) {
@@ -89,7 +90,7 @@ fun RouteScreen(navController: NavHostController) {
                                     )
                                     .padding(10.dp)
                                     .clickable(
-                                        onClick = { navController.navigate(Screen.Home.name) }
+                                        onClick = { navController.navigate(homeRoute()) }
                                     )
                             )
                             Row(

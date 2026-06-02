@@ -50,6 +50,7 @@ import com.naranjapina.heat_tourism.component.LazyFilterChipRow
 import com.naranjapina.heat_tourism.component.TitleAndButton
 import com.naranjapina.heat_tourism.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.navigation.homeRoute
 import com.naranjapina.heat_tourism.utils.RedToOrangeGradientBrush
 import com.naranjapina.heat_tourism.utils.mockDestinations
 import com.naranjapina.heat_tourism.utils.mockPublications
@@ -144,7 +145,7 @@ fun NoTravelHomeScreen(navController: NavHostController) {
                     modifier = Modifier.padding(15.dp).fillMaxWidth(),
                     text = "Ir a menu con Viaje"
                 ) {
-                    navController.navigate("${Screen.Home.name}?state=travel")
+                    navController.navigate(homeRoute("travel"))
                 }
             }
         }
@@ -356,7 +357,7 @@ fun TravelHomeScreen(navController: NavHostController) {
                     modifier = Modifier.padding(15.dp).fillMaxWidth(),
                     text = "Volver a menu sin Viaje"
                 ) {
-                    navController.navigate(Screen.Home.name)
+                    navController.navigate(homeRoute())
                 }
             }
 

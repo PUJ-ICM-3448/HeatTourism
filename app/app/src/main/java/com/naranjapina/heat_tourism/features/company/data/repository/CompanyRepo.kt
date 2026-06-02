@@ -82,7 +82,7 @@ class CompanyRepo {
     /**
      * Actualiza la información de una empresa existente en Firestore.
      */
-    suspend fun updateCompany(company: Company) {
+    suspend fun updateCompany(company: Company): Company? {
         val id = company.id
             ?: throw CompanyException.UnknownCompanyException("El ID de la empresa no puede ser nulo para actualizar")
         try {
@@ -93,6 +93,7 @@ class CompanyRepo {
         } catch (e: Exception) {
             throw CompanyException.UnknownCompanyException(e.localizedMessage)
         }
+        return null
     }
 
     /**

@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
-import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.CompanyScreen
+import com.naranjapina.heat_tourism.features.company.presentation.Company.screen.CompanyScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
@@ -69,7 +69,7 @@ fun NavigationStack() {
         composable(
             route = Screen.Company.name
         ) {
-            CompanyScreen(navController)
+            CompanyScreen(navController, authViewModel = authViewModel)
         }
         composable(
             route = Screen.CreatePost.name
@@ -109,7 +109,7 @@ fun NavigationStack() {
         composable(
             route = Screen.Company.name
         ) {
-            CompanyScreen(navController)
+            CompanyScreen(navController, authViewModel = authViewModel)
         }
         composable(
             route = Screen.Map.name

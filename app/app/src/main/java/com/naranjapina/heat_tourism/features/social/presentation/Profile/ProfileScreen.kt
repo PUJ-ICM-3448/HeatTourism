@@ -236,6 +236,28 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                             StatRowItemData(title = "Seguidores", value = 234)
                         )
                     )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            GradientButton(text = "Amigos") {
+                                navController.navigate(Screen.Friend.name)
+                            }
+                        }
+                        Box(modifier = Modifier.weight(1f)) {
+                            GradientButton(text = "Chats") {
+                                navController.navigate(Screen.ChatsList.name)
+                            }
+                        }
+                    }
+                    GradientButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Notificaciones"
+                    ) {
+                        navController.navigate(Screen.Notifications.name)
+                    }
                 }
             }
 

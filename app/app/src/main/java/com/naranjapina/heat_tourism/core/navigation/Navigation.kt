@@ -64,7 +64,7 @@ enum class Screen {
 
     // --- Chats ---
     Chats,              // Lista de conversaciones
-    Chat,               // Conversacion individual (recibe chatId)
+    Chat,               // Conversacion individual (recibe otherUserId)
 
     // --- Rutas y compras ---
     RouteOverview,      // Detalle + mapa de una ruta (antes Route + RouteOverview, ahora fusionado)
@@ -181,16 +181,16 @@ fun NavigationStack() {
         // ==================== CHATS ====================
         composable(Screen.Chats.name) { ChatsListScreen(navController) }
         composable(
-            route = "${Screen.Chat.name}?chatId={chatId}",
+            route = "${Screen.Chat.name}?otherUserId={otherUserId}",
             arguments = listOf(
-                navArgument("chatId") {
+                navArgument("otherUserId") {
                     type = NavType.StringType
                     nullable = true
                 }
             )
         ) {
-            val chatId = it.arguments?.getString("chatId")
-            ChatScreen(navController, chatId)
+            val otherUserId = it.arguments?.getString("otherUserId") ?: ""
+            ChatScreen(navController, otherUserId)
         }
 
         // ==================== RUTAS Y COMPRAS ====================

@@ -18,7 +18,7 @@ composeBom = "2024.09.00"
 navigationCompose = "2.9.7"
 
 # Bloque B - Mapas + Localizacion + Rutas
-mapbox = "11.14.2"
+mapbox = "11.16.0"
 playServicesLocation = "21.3.0"
 accompanistPermissions = "0.36.0"
 

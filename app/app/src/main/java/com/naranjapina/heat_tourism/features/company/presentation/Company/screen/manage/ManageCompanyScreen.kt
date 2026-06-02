@@ -1,7 +1,6 @@
 package com.naranjapina.heat_tourism.features.company.presentation.Company.screen.manage
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
@@ -40,7 +39,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -55,22 +53,19 @@ import java.io.FileOutputStream
 fun ManageCompanyScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    viewModel: ManageCompanyViewModel = viewModel() // Inyección por defecto de Jetpack Compose Lifecycle
+    viewModel: ManageCompanyViewModel = viewModel()
 ) {
     val context = LocalContext.current
 
-    // Recolectar el estado del ViewModel de manera segura para Compose
     val state by viewModel.state.collectAsState()
     val authState by authViewModel.state.collectAsState()
 
     var tempUri by remember { mutableStateOf<Uri?>(null) }
 
-
     LaunchedEffect(Unit) {
         viewModel.loadCompanyData(authState.user?.id)
     }
 
-    // --- ESCUCHAR ALERTAS DE ÉXITO O ERROR ---
     LaunchedEffect(state.isSavedSuccess, state.error) {
         if (state.isSavedSuccess) {
             Toast.makeText(context, "Información actualizada", Toast.LENGTH_SHORT).show()
@@ -81,7 +76,6 @@ fun ManageCompanyScreen(
         }
     }
 
-    // --- LÓGICA DE GESTIÓN DE LOGO ---
     fun saveLogo(uri: Uri): String? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -135,7 +129,6 @@ fun ManageCompanyScreen(
         }
     }
 
-    // --- DISEÑO DE LA INTERFAZ ---
     MenuBottonLayout(activeName = "profile", navController = navController) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -145,14 +138,12 @@ fun ManageCompanyScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Indicador visual de carga superior (opcional pero muy útil)
             if (state.isLoading) {
                 item {
                     CircularProgressIndicator(color = Color.Red)
                 }
             }
 
-            // Imagen / Avatar
             item {
                 Box(
                     modifier = Modifier
@@ -170,7 +161,6 @@ fun ManageCompanyScreen(
                 }
             }
 
-            // Botones multimedia (Deshabilitados en Loading)
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Button(
@@ -201,7 +191,6 @@ fun ManageCompanyScreen(
                 }
             }
 
-            // Input Nombre de la Empresa
             item {
                 OutlinedTextField(
                     value = state.name,
@@ -213,7 +202,6 @@ fun ManageCompanyScreen(
                 )
             }
 
-            // Input Correo
             item {
                 OutlinedTextField(
                     value = state.contactEmail,
@@ -226,7 +214,6 @@ fun ManageCompanyScreen(
                 )
             }
 
-            // Input Teléfono
             item {
                 OutlinedTextField(
                     value = state.contactPhone,
@@ -239,7 +226,6 @@ fun ManageCompanyScreen(
                 )
             }
 
-            // Input Biografía
             item {
                 OutlinedTextField(
                     value = state.biography,
@@ -252,10 +238,7 @@ fun ManageCompanyScreen(
                 )
             }
 
-            // Botón de Guardado
             item {
-                // Nota: Asegúrate de que tu GradientButton maneje internamente un parámetro 'enabled'
-                // o pásale una lambda vacía para simular bloqueo si está cargando.
                 GradientButton(
                     text = if (state.isLoading) "Guardando..." else "Guardar Cambios"
                 ) {

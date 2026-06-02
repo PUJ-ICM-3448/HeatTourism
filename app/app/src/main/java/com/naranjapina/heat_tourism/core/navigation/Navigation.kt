@@ -67,11 +67,6 @@ fun NavigationStack() {
             CheckInScreen(navController)
         }
         composable(
-            route = Screen.Company.name
-        ) {
-            CompanyScreen(navController, authViewModel = authViewModel)
-        }
-        composable(
             route = Screen.CreatePost.name
         ) {
             CreatePostScreen(navController)
@@ -107,9 +102,16 @@ fun NavigationStack() {
             )
         }
         composable(
-            route = Screen.Company.name
+            route = Screen.Company.name,
+            arguments = listOf(
+                navArgument("companyId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
         ) {
-            CompanyScreen(navController, authViewModel = authViewModel)
+            val companyId = it.arguments?.getString("companyId")
+            CompanyScreen(navController, authViewModel = authViewModel, companyId)
         }
         composable(
             route = Screen.Map.name

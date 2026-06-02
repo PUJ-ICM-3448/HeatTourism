@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ManageCompanyViewModel(
+class ViewCompanyViewModel(
     // private val updateCompanyUsecase: UpdateCompanyUsecase = UpdateCompanyUsecase()
     private val loadCompanyDataUseCase: LoadCompanyDataUseCase = LoadCompanyDataUseCase(),
     private val getCompanyIdByAdmin: GetCompanyIdByAdmin = GetCompanyIdByAdmin(),
@@ -20,6 +20,7 @@ class ManageCompanyViewModel(
 
     private val _state = MutableStateFlow(ViewCompanyState())
     val state = _state.asStateFlow()
+
 
     // --- Captura de Eventos/Cambios en los inputs ---
     fun onNameChange(name: String) {
@@ -47,18 +48,8 @@ class ManageCompanyViewModel(
         _state.update { it.copy(isSavedSuccess = false) }
     }
 
-    fun loadCompanyData(userId: String?) {
-        val currentState = _state.value
-
+    fun loadCompanyData(companyId: String?) {
         viewModelScope.launch {
-            var companyId = currentState.id
-            Log.d("test", userId ?: "vacio")
-
-            if(companyId == null) {
-                companyId = getCompanyIdByAdmin(userId ?: "")
-                _state.update { it.copy(id = companyId) }
-            }
-
             if(companyId != null) {
                 val company = loadCompanyDataUseCase(companyId!!);
                 _state.update { it.copy(
@@ -71,43 +62,11 @@ class ManageCompanyViewModel(
                     activeRoutesIds = company.activeRoutesIds,
                     activeAdministratorIds = company.activeAdministratorIds,
                     isLoading = false,
-                    isSavedSuccess = true
+                    isSavedSuccess = true,
+                    id = companyId
                 ) }
             }
         }
     }
 
-    // --- Evento de Guardado ---
-    fun onSaveCompanyEvent() {
-        val currentState = _state.value
-
-        viewModelScope.launch {
-            // Activamos el estado de carga y limpiamos errores previos
-            _state.update { it.copy(isLoading = true, error = null) }
-            try {
-                // 1. Invocamos el caso de uso con todos los datos del estado actual
-                val updatedCompany = updateCompanyUseCase(
-                    id = currentState.id,
-                    name = currentState.name,
-                    companyAvatarURL = currentState.companyAvatarURL,
-                    biography = currentState.biography,
-                    contactEmail = currentState.contactEmail,
-                    contactPhone = currentState.contactPhone,
-                    rating = currentState.rating,
-                    activeRoutesIds = currentState.activeRoutesIds,
-                    activeAdministratorIds = currentState.activeAdministratorIds
-                )
-
-
-                _state.update { it.copy(isLoading = false, isSavedSuccess = true) }
-
-            } catch (e: IllegalArgumentException) {
-                // Captura específicamente las validaciones de campos vacíos o email inválido del Usecase
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
-            } catch (e: Exception) {
-                // Captura cualquier otro error (Falta de internet, error del servidor, etc.)
-                _state.update { it.copy(isLoading = false, error = e.localizedMessage ?: "Error inesperado al guardar") }
-            }
-        }
-    }
 }

@@ -154,7 +154,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                         Text(text = "Mi Perfil", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = null,
+                            contentDescription = "Configuracion",
                             modifier = Modifier
                                 .background(
                                     color = Color.White.copy(.8f),
@@ -163,7 +163,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                                 .padding(10.dp)
                                 .clickable(
                                     onClick = {
-                                        authViewModel.logOutUser()
+                                        navController.navigate(Screen.Settings.name)
                                     }
                                 )
                         )

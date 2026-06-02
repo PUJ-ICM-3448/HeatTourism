@@ -117,6 +117,9 @@ fun NavigationStack() {
                 },
                 onGoToRegister = {
                     navController.navigate(Screen.Register.name)
+                },
+                onGoToRestorePwd = {
+                    navController.navigate(Screen.RestorePwd.name)
                 }
             )
         }

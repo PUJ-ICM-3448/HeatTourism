@@ -159,7 +159,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                         Text(text = "Mi Perfil", fontWeight = FontWeight.SemiBold, fontSize = 24.sp)
                         Icon(
                             imageVector = Icons.Outlined.Settings,
-                            contentDescription = null,
+                            contentDescription = "Configuracion",
                             modifier = Modifier
                                 .background(
                                     color = Color.White.copy(.8f),
@@ -168,7 +168,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                                 .padding(10.dp)
                                 .clickable(
                                     onClick = {
-                                        authViewModel.logOutUser()
+                                        navController.navigate(Screen.Settings.name)
                                     }
                                 )
                         )
@@ -241,6 +241,28 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                             StatRowItemData(title = "Seguidores", value = 234)
                         )
                     )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            GradientButton(text = "Amigos") {
+                                navController.navigate(Screen.Friend.name)
+                            }
+                        }
+                        Box(modifier = Modifier.weight(1f)) {
+                            GradientButton(text = "Chats") {
+                                navController.navigate(Screen.ChatsList.name)
+                            }
+                        }
+                    }
+                    GradientButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Notificaciones"
+                    ) {
+                        navController.navigate(Screen.Notifications.name)
+                    }
                 }
             }
 

@@ -45,7 +45,7 @@ fun HorizontalDestinationCard(
             .clip(RoundedCornerShape(15.dp))
             .background(Color.White)
             .clickable(onClick = {
-                onClick?.invoke() ?: navController.navigate(Screen.Route.name)
+                onClick?.invoke() ?: navController.navigate(Screen.RouteOverview.name)
             }),
         verticalAlignment = Alignment.CenterVertically,
     ) {

@@ -1,5 +1,6 @@
 package com.naranjapina.heat_tourism.features.auth.presentation.login
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,6 +43,7 @@ fun LogInScreen(authViewModel: AuthViewModel,
                 viewModel: LoginViewModel,
                 onGoToHome:() -> Unit,
                 onGoToRegister:() -> Unit,
+                onGoToRestorePwd:() -> Unit,
 ) {
     val state: LoginState by viewModel.state.collectAsState()
 
@@ -123,7 +125,9 @@ fun LogInScreen(authViewModel: AuthViewModel,
                         Text(
                             text = "¿Olvidaste tu contraseña?",
                             color = colorResource(R.color.red_400),
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onGoToRestorePwd() },
                             textAlign = TextAlign.Right
                         )
 

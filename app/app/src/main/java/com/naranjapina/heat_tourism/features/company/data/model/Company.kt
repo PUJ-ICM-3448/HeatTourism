@@ -9,6 +9,7 @@ data class Company(
     val contactPhone: String = "",
 
     val activeRoutesIds: List<String> = emptyList(), // IDs de rutas que opera
+    val activeAdministratorIds: List<String> = emptyList(),
 
     val rating: Double = 0.0
 )

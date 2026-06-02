@@ -22,10 +22,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,17 +61,20 @@ import com.naranjapina.heat_tourism.core.component.StatsRow
 import com.naranjapina.heat_tourism.core.component.TitleAndButton
 import com.naranjapina.heat_tourism.core.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.core.navigation.Screen
+import com.naranjapina.heat_tourism.core.utils.beigeGradientBrush
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController) {
+fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController, onGoToCompany: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE) }
 
     var imagePath by remember { mutableStateOf(prefs.getString("profile_image", null)) }
     var tempUri by remember { mutableStateOf<Uri?>(null) }
+
 
     fun saveImageToInternalStorage(uri: Uri): String? {
         return try {
@@ -181,7 +186,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                         ) {
                             AsyncImage(
                                 model = imagePath
-                                    ?: "https://avatars.githubusercontent.com/u/62490806?v=4",
+                                    ?: "",
                                 contentDescription = "Avatar perfil",
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -191,16 +196,16 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                             )
                         }
                         Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceEvenly
+                            modifier = Modifier.fillMaxHeight().width(150.dp),
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Miguel Vargas",
+                                text = authState.user!!.fullName,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
 
-                            GradientButton(text = "Tomar foto") {
+                            GradientButton(text = "Tomar foto", modifier = Modifier.fillMaxWidth()) {
                                 val permissionCheck = ContextCompat.checkSelfPermission(
                                     context,
                                     Manifest.permission.CAMERA
@@ -219,7 +224,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                                 }
                             }
 
-                            GradientButton(text = "Galería") {
+                            GradientButton(text = "Galería", modifier = Modifier.fillMaxWidth()) {
                                 galleryLauncher.launch(
                                     PickVisualMediaRequest(
                                         ActivityResultContracts.PickVisualMedia.ImageOnly
@@ -236,6 +241,20 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                             StatRowItemData(title = "Seguidores", value = 234)
                         )
                     )
+                }
+            }
+
+            if(authState.user!!.roles.contains<UserRole>(UserRole.ADMINISTRATOR)) item {
+                Column(
+                    modifier = Modifier.padding(12.dp).background(
+                        beigeGradientBrush()
+                    ).padding(8.dp)
+                ){
+                    Text("Eres administrador de una empresa, entra a su perfil para ver sus datos")
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Button(modifier = Modifier.fillMaxWidth(),onClick = onGoToCompany) {
+                        Text("Ir a empresa")
+                    }
                 }
             }
 

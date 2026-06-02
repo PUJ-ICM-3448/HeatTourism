@@ -128,7 +128,10 @@ fun NavigationStack() {
         ) {
             ProfileScreen(
                 authViewModel,
-                navController
+                navController,
+                onGoToCompany = {
+                    navController.navigate(Screen.ManageCompany.name)
+                }
             )
         }
         composable(

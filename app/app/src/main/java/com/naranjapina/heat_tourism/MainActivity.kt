@@ -6,12 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import com.mapbox.common.MapboxOptions
 import com.naranjapina.heat_tourism.core.design.theme.HeatTourismTheme
 import com.naranjapina.heat_tourism.core.navigation.NavigationStack
 import com.naranjapina.heat_tourism.core.utils.MapboxConfig
+import com.naranjapina.heat_tourism.features.company.data.model.Company
+import com.naranjapina.heat_tourism.features.company.data.repository.CompanyRepo
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewModelScope
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

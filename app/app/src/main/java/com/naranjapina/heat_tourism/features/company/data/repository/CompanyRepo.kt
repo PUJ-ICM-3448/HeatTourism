@@ -33,6 +33,23 @@ class CompanyRepo {
     }
 
     /**
+     * Obtiene todas las empresas asociadas a un ID de administrador.
+     */
+    suspend fun getCompaniesByAdministratorId(adminId: String): List<Company> {
+        try {
+            val querySnapshot = collectionRef
+                .whereArrayContains("activeAdministratorIds", adminId)
+                .get()
+                .await()
+            return querySnapshot.documents.map { mapToCompany(it) }
+        } catch (e: FirebaseNetworkException) {
+            throw CompanyException.NetworkException()
+        } catch (e: Exception) {
+            throw CompanyException.UnknownCompanyException(e.localizedMessage)
+        }
+    }
+
+    /**
      * Obtiene todas las empresas registradas en Firestore.
      */
     suspend fun getAllCompanies(): List<Company> {
@@ -102,6 +119,7 @@ class CompanyRepo {
             "contactEmail" to company.contactEmail,
             "contactPhone" to company.contactPhone,
             "activeRoutesIds" to company.activeRoutesIds,
+            "activeAdministratorIds" to company.activeAdministratorIds,
             "rating" to company.rating
         )
     }
@@ -113,6 +131,9 @@ class CompanyRepo {
         @Suppress("UNCHECKED_CAST")
         val activeRoutesIds = document.get("activeRoutesIds") as? List<String> ?: emptyList()
 
+        @Suppress("UNCHECKED_CAST")
+        val activeAdministratorIds = document.get("activeAdministratorIds") as? List<String> ?: emptyList()
+
         return Company(
             id = document.id,
             name = document.getString("name").orEmpty(),
@@ -121,6 +142,7 @@ class CompanyRepo {
             contactEmail = document.getString("contactEmail").orEmpty(),
             contactPhone = document.getString("contactPhone").orEmpty(),
             activeRoutesIds = activeRoutesIds,
+            activeAdministratorIds = activeAdministratorIds,
             rating = document.getDouble("rating") ?: 0.0
         )
     }

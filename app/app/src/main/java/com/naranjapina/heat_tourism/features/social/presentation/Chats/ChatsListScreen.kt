@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.naranjapina.heat_tourism.R
-import com.naranjapina.heat_tourism.layout.MenuBottonLayout
-import com.naranjapina.heat_tourism.navigation.Screen
+import com.naranjapina.heat_tourism.core.layout.MenuBottonLayout
+import com.naranjapina.heat_tourism.core.navigation.Screen
 import com.naranjapina.heat_tourism.shared.social.ChatRepo
 import java.text.SimpleDateFormat
 import java.util.Date

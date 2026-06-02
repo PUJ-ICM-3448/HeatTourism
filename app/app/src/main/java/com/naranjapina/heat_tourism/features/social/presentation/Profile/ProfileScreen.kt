@@ -200,7 +200,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                             verticalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = authState.user!!.fullName,
+                                text = if(authState.user != null) authState.user!!.fullName else "",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 20.sp
                             )
@@ -244,7 +244,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                 }
             }
 
-            if(authState.user!!.roles.contains<UserRole>(UserRole.ADMINISTRATOR)) item {
+            if(authState.user != null && authState.user!!.roles.contains<UserRole>(UserRole.ADMINISTRATOR)) item {
                 Column(
                     modifier = Modifier.padding(12.dp).background(
                         beigeGradientBrush()

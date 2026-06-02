@@ -11,14 +11,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
-import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ManageCompanyScreen
+import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.CompanyScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.RouteOverviewScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Buy.BuyScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Route.RouteScreen
-import com.naranjapina.heat_tourism.features.social.presentation.Company.CompanyScreen
 import com.naranjapina.heat_tourism.features.social.presentation.CreatePost.CreatePostScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Post.PostScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Profile.ProfileScreen
@@ -39,7 +38,6 @@ enum class Screen {
     CreatePost,
     Post,
     Map,
-    ManageCompany,
     RouteGroup,
     CheckIn,
     RouteOverview
@@ -109,9 +107,9 @@ fun NavigationStack() {
             )
         }
         composable(
-            route = Screen.ManageCompany.name
+            route = Screen.Company.name
         ) {
-            ManageCompanyScreen(navController)
+            CompanyScreen(navController)
         }
         composable(
             route = Screen.Map.name
@@ -130,7 +128,7 @@ fun NavigationStack() {
                 authViewModel,
                 navController,
                 onGoToCompany = {
-                    navController.navigate(Screen.ManageCompany.name)
+                    navController.navigate(Screen.Company.name)
                 }
             )
         }

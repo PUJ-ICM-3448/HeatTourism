@@ -43,7 +43,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 @Composable
-fun ManageCompanyScreen(navController: NavHostController) {
+fun CompanyScreen(navController: NavHostController) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("company_prefs", Context.MODE_PRIVATE) }
 

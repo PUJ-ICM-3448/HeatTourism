@@ -98,7 +98,7 @@ fun DestinationCard(
                 modifier = Modifier,
                 text = "Explorar"
             ) {
-                navController.navigate(Screen.Route.name)
+                navController.navigate(Screen.RouteOverview.name)
             }
         }
     }

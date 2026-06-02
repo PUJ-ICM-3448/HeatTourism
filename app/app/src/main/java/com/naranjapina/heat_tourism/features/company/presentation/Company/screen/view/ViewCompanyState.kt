@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.features.company.presentation.ManageCompany
+package com.naranjapina.heat_tourism.features.company.presentation.Company.screen.view
 
 data class ViewCompanyState(
     // Estados de la interfaz/flujo

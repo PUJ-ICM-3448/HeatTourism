@@ -261,7 +261,9 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
             item {
                 Column(modifier = Modifier.padding(15.dp, 0.dp)) {
                     Spacer(modifier = Modifier.height(15.dp))
-                    TitleAndButton("Mis viajes", "Ver todos")
+                    TitleAndButton("Mis viajes", "Ver todos") {
+                        navController.navigate(Screen.Purchases.name)
+                    }
                     repeat(2) {
                         HorizontalDestinationCard(
                             modifier = Modifier

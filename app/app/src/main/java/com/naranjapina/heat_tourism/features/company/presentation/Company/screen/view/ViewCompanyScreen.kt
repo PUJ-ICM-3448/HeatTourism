@@ -39,13 +39,13 @@ import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import com.naranjapina.heat_tourism.core.component.GradientButton
 import com.naranjapina.heat_tourism.core.layout.MenuBottonLayout
-import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ManageCompanyViewModel
-import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ViewCompanyViewModel
+import com.naranjapina.heat_tourism.features.company.presentation.Company.screen.view.ViewCompanyViewModel
 
 @Composable
 fun ViewCompanyScreen(
     navController: NavHostController,
     companyId: String,
+    accentColor: Color = Color.Red,
     viewModel: ViewCompanyViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -62,7 +62,7 @@ fun ViewCompanyScreen(
             contentAlignment = Alignment.Center
         ) {
             if (state.isLoading) {
-                CircularProgressIndicator(color = Color.Red)
+                CircularProgressIndicator(color = accentColor)
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -127,7 +127,7 @@ fun ViewCompanyScreen(
                                     text = "Acerca de nosotros",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = accentColor
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
@@ -149,7 +149,7 @@ fun ViewCompanyScreen(
                                 text = "Contacto",
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = accentColor
                             )
 
                             if (state.contactEmail.isNotBlank()) {
@@ -189,7 +189,8 @@ fun ViewCompanyScreen(
                     item {
                         Spacer(modifier = Modifier.height(10.dp))
                         GradientButton(
-                            text = "Ver Rutas Activas"
+                            text = "Ver Rutas Activas",
+                            color = if (accentColor != Color.Red) accentColor else null
                         ) {
                             if (state.activeRoutesIds.isNotEmpty()) {
                                 navController.navigate("routes_by_company/${companyId}")

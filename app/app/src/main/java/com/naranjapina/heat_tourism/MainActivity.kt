@@ -17,6 +17,7 @@ import com.naranjapina.heat_tourism.features.company.data.model.Company
 import com.naranjapina.heat_tourism.features.company.data.repository.CompanyRepo
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewModelScope
+import com.naranjapina.heat_tourism.core.utils.FirestoreSeeder
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

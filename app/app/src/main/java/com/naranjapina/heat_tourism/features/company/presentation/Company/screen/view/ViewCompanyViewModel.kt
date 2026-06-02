@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.features.company.presentation.ManageCompany
+package com.naranjapina.heat_tourism.features.company.presentation.Company.screen.view
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -51,20 +51,23 @@ class ViewCompanyViewModel(
     fun loadCompanyData(companyId: String?) {
         viewModelScope.launch {
             if(companyId != null) {
-                val company = loadCompanyDataUseCase(companyId!!);
-                _state.update { it.copy(
-                    name = company.name,
-                    companyAvatarURL = company.companyAvatarURL,
-                    biography = company.biography.orEmpty(),
-                    contactEmail = company.contactEmail,
-                    contactPhone = company.contactPhone,
-                    rating = company.rating,
-                    activeRoutesIds = company.activeRoutesIds,
-                    activeAdministratorIds = company.activeAdministratorIds,
-                    isLoading = false,
-                    isSavedSuccess = true,
-                    id = companyId
-                ) }
+                try {
+                    val company = loadCompanyDataUseCase(companyId)
+                    _state.update { it.copy(
+                        name = company.name,
+                        companyAvatarURL = company.companyAvatarURL,
+                        biography = company.biography.orEmpty(),
+                        contactEmail = company.contactEmail,
+                        contactPhone = company.contactPhone,
+                        rating = company.rating,
+                        activeRoutesIds = company.activeRoutesIds,
+                        activeAdministratorIds = company.activeAdministratorIds,
+                        isLoading = false,
+                        id = companyId
+                    ) }
+                } catch (e: Exception) {
+                    _state.update { it.copy(isLoading = false, error = e.localizedMessage) }
+                }
             }
         }
     }

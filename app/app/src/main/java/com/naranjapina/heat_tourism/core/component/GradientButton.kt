@@ -18,8 +18,15 @@ fun GradientButton(
     modifier: Modifier = Modifier,
     text: String,
     enabled: Boolean = true,
+    color: Color? = null,
     onClick: () -> Unit
 ) {
+    val backgroundModifier = if (color != null) {
+        Modifier.background(color = color, shape = RoundedCornerShape(15.dp))
+    } else {
+        Modifier.background(brush = redToOrangeGradientBrush(), shape = RoundedCornerShape(15.dp))
+    }
+
     Button(
         enabled = enabled,
         onClick = onClick,
@@ -31,10 +38,7 @@ fun GradientButton(
             containerColor = Color.Transparent
         ),
         modifier = modifier
-            .background(
-                brush = redToOrangeGradientBrush(),
-                shape = RoundedCornerShape(15.dp)
-            )
+            .then(backgroundModifier)
             .clip(RoundedCornerShape(15.dp)),
         shape = RoundedCornerShape(15.dp)
     )

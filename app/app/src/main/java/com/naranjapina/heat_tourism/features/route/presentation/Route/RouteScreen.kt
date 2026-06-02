@@ -198,7 +198,9 @@ fun RouteScreen(navController: NavHostController) {
                     GradientButton(
                         modifier = Modifier.weight(1f),
                         text = "Unirse a la ruta"
-                    ) { }
+                    ) {
+                        navController.navigate("${Screen.Buy.name}?routeId=barcelona_clasica")
+                    }
                     GradientButton(
                         modifier = Modifier.weight(1f),
                         text = "Ver en mapa"
@@ -214,4 +216,3 @@ fun RouteScreen(navController: NavHostController) {
         }
     }
 }
-

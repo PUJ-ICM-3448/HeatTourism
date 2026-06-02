@@ -12,11 +12,12 @@ import androidx.navigation.navArgument
 import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
 import com.naranjapina.heat_tourism.features.company.presentation.Company.screen.CompanyScreen
-import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
-import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen
+import com.naranjapina.heat_tourism.features.home.presentation.Home.HomeDispatcher
 import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.RouteOverviewScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Buy.BuyScreen
+import com.naranjapina.heat_tourism.features.route.presentation.CreateRoute.CreateRouteScreen
+import com.naranjapina.heat_tourism.features.route.presentation.Purchases.PurchasesScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Route.RouteScreen
 import com.naranjapina.heat_tourism.features.social.presentation.CreatePost.CreatePostScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Post.PostScreen
@@ -40,7 +41,9 @@ enum class Screen {
     Map,
     RouteGroup,
     CheckIn,
-    RouteOverview
+    RouteOverview,
+    CreateRoute,
+    Purchases
 }
 
 @Composable
@@ -57,14 +60,25 @@ fun NavigationStack() {
             else Screen.Home.name
     ) {
         composable(
-            route = Screen.Buy.name
+            route = "${Screen.Buy.name}?routeId={routeId}",
+            arguments = listOf(
+                navArgument("routeId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
         ) {
-            BuyScreen(navController)
+            val routeId = it.arguments?.getString("routeId")
+            BuyScreen(navController, routeId, authViewModel)
         }
         composable(
-            route = Screen.CheckIn.name
-        ) {
-            CheckInScreen(navController)
+            route = "${Screen.CheckIn.name}/{groupId}",
+            arguments = listOf(
+                navArgument("groupId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            CheckInScreen(navController, groupId)
         }
         composable(
             route = Screen.CreatePost.name
@@ -72,20 +86,9 @@ fun NavigationStack() {
             CreatePostScreen(navController)
         }
         composable(
-            route = "${Screen.Home.name}?state={state}",
-            arguments = listOf(
-                navArgument("state") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
+            route = Screen.Home.name
         ) {
-            val state = it.arguments?.getString("state")
-
-            if (state == "travel")
-                TravelHomeScreen(navController)
-            else
-                NoTravelHomeScreen(navController)
+            HomeDispatcher(navController)
         }
         composable(
             route = Screen.LogIn.name
@@ -119,9 +122,16 @@ fun NavigationStack() {
             MapScreen(navController)
         }
         composable(
-            route = Screen.Post.name
+            route = "${Screen.Post.name}?postId={postId}",
+            arguments = listOf(
+                navArgument("postId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
         ) {
-            PostScreen(navController)
+            val postId = it.arguments?.getString("postId") ?: "default_post_123"
+            PostScreen(navController, authViewModel, postId)
         }
         composable(
             route = Screen.Profile.name
@@ -163,12 +173,22 @@ fun NavigationStack() {
             )
         ) {
             val destinationId = it.arguments?.getString("destinationId")
-            RouteOverviewScreen(navController, destinationId)
+            RouteOverviewScreen(navController, destinationId, authViewModel)
         }
         composable(
             route = Screen.Searcher.name
         ) {
             SearcherScreen(navController)
+        }
+        composable(
+            route = "create_route"
+        ) {
+            CreateRouteScreen(navController)
+        }
+        composable(
+            route = Screen.Purchases.name
+        ) {
+            PurchasesScreen(navController, authViewModel)
         }
     }
 }

@@ -62,6 +62,10 @@ import com.naranjapina.heat_tourism.core.utils.LocationUtils
 import com.naranjapina.heat_tourism.core.utils.MapboxConfig
 import com.naranjapina.heat_tourism.data.SampleDestinations
 import com.naranjapina.heat_tourism.data.service.MapboxDirectionsService
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
+import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
 import com.naranjapina.heat_tourism.features.map.presentation.model.MapPoint
 import com.naranjapina.heat_tourism.features.map.presentation.model.RouteSummary
 
@@ -69,22 +73,25 @@ import com.naranjapina.heat_tourism.features.map.presentation.model.RouteSummary
 @Composable
 fun RouteOverviewScreen(
     navController: NavHostController,
-    destinationId: String? = null
+    destinationId: String? = null,
+    authViewModel: AuthViewModel = viewModel(),
+    viewModel: RouteOverviewViewModel = viewModel()
 ) {
+    val authState by authViewModel.state.collectAsState()
+    val isAdmin = authState.user?.roles?.contains(UserRole.ADMINISTRATOR) == true
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    val destinationState by viewModel.destination.collectAsState()
+
+    LaunchedEffect(destinationId) {
+        destinationId?.let { viewModel.loadDestination(it) }
         val token = MapboxConfig.accessToken(context)
         if (token.isNotBlank()) {
             MapboxOptions.accessToken = token
         }
     }
 
-
-    val destination = remember(destinationId) {
-        destinationId?.let { SampleDestinations.byId(it) }
-            ?: SampleDestinations.bogotaDestinations.first()
-    }
+    val destination = destinationState ?: return // Loader while destination loads
 
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -103,7 +110,7 @@ fun RouteOverviewScreen(
     var loading by remember { mutableStateOf(true) }
     var errorMsg by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(permissionsState.allPermissionsGranted, destination.id) {
+    LaunchedEffect(permissionsState.allPermissionsGranted, destination) {
         loading = true
         errorMsg = null
         val originPair = LocationUtils.getCurrentOrFallbackPoint(
@@ -170,16 +177,40 @@ fun RouteOverviewScreen(
                 .background(Color.White)
                 .padding(20.dp)
         ) {
-            Text(
-                text = destination.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = destination.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    modifier = Modifier.weight(1f)
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = destination.description,
-                color = colorResource(R.color.dark_beige)
-            )
+
+            var editedDescription by remember(destination.description) { mutableStateOf(destination.description) }
+
+            if (isAdmin) {
+                androidx.compose.material3.TextField(
+                    value = editedDescription,
+                    onValueChange = { editedDescription = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = androidx.compose.material3.TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = colorResource(R.color.red_600),
+                        unfocusedIndicatorColor = colorResource(R.color.red_400)
+                    )
+                )
+            } else {
+                Text(
+                    text = destination.description,
+                    color = colorResource(R.color.dark_beige)
+                )
+            }
             Spacer(modifier = Modifier.height(12.dp))
 
             LocationPicker(
@@ -193,15 +224,16 @@ fun RouteOverviewScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                val actionColor = if (isAdmin) colorResource(R.color.red_600) else colorResource(R.color.red_400)
                 Text(
                     text = "Elegir en mapa",
-                    color = colorResource(R.color.red_400),
+                    color = actionColor,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { navController.navigate(Screen.Map.name) }
                 )
                 Text(
                     text = "Buscar destino",
-                    color = colorResource(R.color.red_400),
+                    color = actionColor,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { navController.navigate(Screen.Searcher.name) }
                 )
@@ -215,7 +247,7 @@ fun RouteOverviewScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         CircularProgressIndicator(
-                            color = colorResource(R.color.red_400),
+                            color = if (isAdmin) colorResource(R.color.red_600) else colorResource(R.color.red_400),
                             modifier = Modifier.height(20.dp)
                         )
                         Text("Calculando ruta…")
@@ -244,8 +276,12 @@ fun RouteOverviewScreen(
             Spacer(modifier = Modifier.height(15.dp))
             GradientButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Iniciar ruta"
-            ) { }
+                text = if (isAdmin) "Actualizar Destino" else "Iniciar ruta"
+            ) {
+                if (isAdmin) {
+                    viewModel.updateDestination(destination.copy(description = editedDescription)) { }
+                }
+            }
         }
     }
 }

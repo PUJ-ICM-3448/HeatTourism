@@ -39,3 +39,26 @@ yarn-error.log*
 .idea/
 
 app/.idea/
+
+.cocoindex_code
+*.salive
+*.sinfo
+*.swp
+*.swo
+*.swn
+*.swp~
+*~.swp
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+*.tmp
+*~
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+*.tmp
+*~

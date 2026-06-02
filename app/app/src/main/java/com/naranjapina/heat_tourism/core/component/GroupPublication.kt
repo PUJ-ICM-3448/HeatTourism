@@ -2,6 +2,7 @@ package com.naranjapina.heat_tourism.core.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ fun GroupPublication(
     location: String,
     age: String,
     contentDescription: String,
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -41,6 +43,7 @@ fun GroupPublication(
                 RoundedCornerShape(15.dp)
             )
             .background(Color.White)
+            .clickable { onClick() }
     ) {
         AsyncImage(
             modifier = Modifier

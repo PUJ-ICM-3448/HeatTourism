@@ -1,5 +1,6 @@
 package com.naranjapina.heat_tourism.core.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import com.naranjapina.heat_tourism.R
 
 @Composable
-fun TitleAndButton(title: String, buttonLabel: String) {
+fun TitleAndButton(title: String, buttonLabel: String, onClick: (() -> Unit)? = null) {
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -31,7 +32,8 @@ fun TitleAndButton(title: String, buttonLabel: String) {
         )
         Text(
             text = buttonLabel,
-            color = colorResource(R.color.red_400)
+            color = colorResource(R.color.red_400),
+            modifier = if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
         )
     }
 

@@ -29,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.core.component.JustInputText
 import com.naranjapina.heat_tourism.core.component.LazyFilterChipRow
@@ -39,33 +41,16 @@ import com.naranjapina.heat_tourism.data.SampleDestinations
 import com.naranjapina.heat_tourism.features.map.presentation.model.MapPoint
 
 @Composable
-fun SearcherScreen(navController: NavHostController) {
-    var text by remember {
-        mutableStateOf("")
-    }
-    var selectedCategory by remember {
-        mutableStateOf(SampleDestinations.ALL_CATEGORIES)
-    }
+fun SearcherScreen(
+    navController: NavHostController,
+    viewModel: SearcherViewModel = viewModel()
+) {
+    val text by viewModel.query.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val filteredDestinations by viewModel.destinations.collectAsState()
 
     val categoryOptions = remember {
         SampleDestinations.categoryOptions()
-    }
-
-    val filteredDestinations = remember(text, selectedCategory) {
-        val categoryFiltered = SampleDestinations.filterByCategory(
-            destinations = SampleDestinations.bogotaDestinations,
-            selectedCategory = selectedCategory
-        )
-        val query = text.trim().lowercase()
-        if (query.isBlank()) {
-            categoryFiltered
-        } else {
-            categoryFiltered.filter { point ->
-                point.name.lowercase().contains(query) ||
-                    point.description.lowercase().contains(query) ||
-                    point.category.lowercase().contains(query)
-            }
-        }
     }
 
     MenuBottonLayout(activeName = "searcher", navController = navController) { paddingValues ->
@@ -100,7 +85,7 @@ fun SearcherScreen(navController: NavHostController) {
                         value = text,
                         placeholder = "Buscar destinos, lugares, eventos...",
                         icon = Icons.Outlined.Search,
-                        changeValue = { text = it }
+                        changeValue = { viewModel.onQueryChange(it) }
                     )
                 }
             }
@@ -114,7 +99,7 @@ fun SearcherScreen(navController: NavHostController) {
                         val selectedId = categoryOptions.firstOrNull {
                             SampleDestinations.categoryLabel(it) == label
                         } ?: SampleDestinations.ALL_CATEGORIES
-                        selectedCategory = selectedId
+                        viewModel.onCategorySelect(selectedId)
                     }
                 )
             }
@@ -181,4 +166,3 @@ private fun SearchResultRow(
         )
     }
 }
-

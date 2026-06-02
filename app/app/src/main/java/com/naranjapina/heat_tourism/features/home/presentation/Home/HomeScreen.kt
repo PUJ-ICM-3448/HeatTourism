@@ -1,31 +1,17 @@
 package com.naranjapina.heat_tourism.features.home.presentation.Home
 
 import android.widget.Toast
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,37 +22,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.naranjapina.heat_tourism.R
-import com.naranjapina.heat_tourism.core.component.ActionCardGridItem
-import com.naranjapina.heat_tourism.core.component.CardRow
 import com.naranjapina.heat_tourism.core.component.DestinationCard
 import com.naranjapina.heat_tourism.core.component.GradientButton
-import com.naranjapina.heat_tourism.core.component.GroupPublication
 import com.naranjapina.heat_tourism.core.component.JustInputText
-import com.naranjapina.heat_tourism.core.component.LazyFilterChipRow
-import com.naranjapina.heat_tourism.core.component.TemperatureWidget
 import com.naranjapina.heat_tourism.core.component.TitleAndButton
+import com.naranjapina.heat_tourism.core.component.GroupPublication
+import com.naranjapina.heat_tourism.core.component.LazyFilterChipRow
 import com.naranjapina.heat_tourism.core.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.core.navigation.Screen
 import com.naranjapina.heat_tourism.core.utils.RememberShakeDetector
-import com.naranjapina.heat_tourism.core.utils.mockDestinations
-import com.naranjapina.heat_tourism.core.utils.mockPublications
 import com.naranjapina.heat_tourism.core.utils.redToOrangeGradientBrush
 import com.naranjapina.heat_tourism.core.utils.rememberAmbientTemperature
 import kotlinx.coroutines.launch
 
+const val COORDINATOR = "COORDINATOR"
+
 @Composable
-fun NoTravelHomeScreen(navController: NavHostController) {
+fun HomeDispatcher(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel = viewModel()
+) {
+    val activeGroupId by homeViewModel.activeGroupId.collectAsStateWithLifecycle()
+
+    if (activeGroupId != null) {
+        HomeWithTravelScreen(navController, homeViewModel)
+    } else {
+        NoTravelHomeScreen(navController, homeViewModel)
+    }
+}
+
+@Composable
+fun NoTravelHomeScreen(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel = viewModel()
+) {
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    var destinations by remember {
-        mutableStateOf(mockDestinations.shuffled().take(4))
-    }
+    val destinations by homeViewModel.destinations.collectAsStateWithLifecycle()
 
     RememberShakeDetector {
-        destinations = mockDestinations.shuffled().take(4)
+        homeViewModel.loadHomeData()
         scope.launch {
             listState.animateScrollToItem(0)
         }
@@ -115,9 +115,7 @@ fun NoTravelHomeScreen(navController: NavHostController) {
             }
 
             item {
-
                 TitleAndButton("Destinos en tendencia", "Ver todos")
-
             }
 
             items(destinations, key = { it.destinationName }) { destination ->
@@ -138,31 +136,34 @@ fun NoTravelHomeScreen(navController: NavHostController) {
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
-                GradientButton(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    text = "Ir a menu con Viaje"
-                ) {
-                    navController.navigate("${Screen.Home.name}?state=travel")
-                }
             }
         }
     }
 }
 
 @Composable
-fun TravelHomeScreen(navController: NavHostController) {
+fun HomeWithTravelScreen(
+    navController: NavHostController,
+    homeViewModel: HomeViewModel = viewModel()
+) {
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val ambientTemp = rememberAmbientTemperature()
-    var publications by remember {
-        mutableStateOf(mockPublications.shuffled().take(2))
+    val ambientTempState = rememberAmbientTemperature()
+    val user by homeViewModel.user.collectAsStateWithLifecycle()
+    val publications by homeViewModel.publications.collectAsStateWithLifecycle()
+    val activeGroup by homeViewModel.activeGroup.collectAsStateWithLifecycle()
+    val activeGroupId by homeViewModel.activeGroupId.collectAsStateWithLifecycle()
+    val members by homeViewModel.members.collectAsStateWithLifecycle()
+
+    LaunchedEffect(activeGroupId) {
+        activeGroupId?.let { id ->
+            homeViewModel.listenForAlerts(context, id)
+        }
     }
 
     RememberShakeDetector {
-        publications = mockPublications.shuffled().take(2)
+        homeViewModel.loadHomeData()
         scope.launch {
             listState.animateScrollToItem(0)
         }
@@ -198,14 +199,19 @@ fun TravelHomeScreen(navController: NavHostController) {
                                 fontSize = 14.sp,
                             )
                             Text(
-                                text = "Barcelona Explorer",
+                                text = activeGroup?.routeName ?: "Cargando viaje...",
                                 color = Color.White,
                                 fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         Text(
-                            text = "En curso",
+                            text = when(activeGroup?.status) {
+                                "ACTIVE" -> "En curso"
+                                "PENDING" -> "Pendiente"
+                                "COMPLETED" -> "Finalizado"
+                                else -> "Cargando..."
+                            },
                             color = Color.White,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(15.dp))
@@ -215,155 +221,123 @@ fun TravelHomeScreen(navController: NavHostController) {
                         )
                     }
                     Text(
-                        text = "Barcelona, España",
+                        text = "Ruta: ${activeGroup?.routeName ?: "---"}",
                         color = Color.White,
                     )
 
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(15.dp))
-                            .background(colorResource(R.color.neutral_100).copy(alpha = 0.25f))
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
+                    // Coordinator Controls
+                    if (user.tipo == COORDINATOR) {
+                        Spacer(modifier = Modifier.height(10.dp))
                         Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(
-                                text = "Progreso del viaje",
-                                color = colorResource(R.color.neutral_200)
-                            )
-                            Text(
-                                text = "2/5 puntos",
-                                color = colorResource(R.color.neutral_100)
-                            )
+                            GradientButton(
+                                modifier = Modifier.weight(1f),
+                                text = "Emitir Alerta"
+                            ) {
+                                activeGroupId?.let { id ->
+                                    homeViewModel.emitAlert(id, "¡Atención! Reunión en el punto de control.")
+                                }
+                            }
+                            GradientButton(
+                                modifier = Modifier.weight(1f),
+                                text = "Iniciar Lista"
+                            ) {
+                                activeGroupId?.let { id ->
+                                    homeViewModel.startAttendance(id)
+                                }
+                            }
                         }
-                        Row(
+                    }
+
+                    if (user.tipo == COORDINATOR) {
+                        Column(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(colorResource(R.color.neutral_200).copy(.35f))
+                                .clip(RoundedCornerShape(15.dp))
+                                .background(colorResource(R.color.green_400).copy(alpha = 0.25f))
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .weight(2f)
-                                    .clip(RoundedCornerShape(5.dp)),
+                            Text(
+                                text = "Panel de Control",
                                 color = Color.White,
-                                thickness = 10.dp
+                                fontWeight = FontWeight.Bold
                             )
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .weight(5f),
-                                color = Color.Transparent,
-                                thickness = 10.dp
-                            )
+                            if (activeGroup?.attendanceStarted == true) {
+                                Text("Llamado a lista activo", color = Color.White, fontSize = 12.sp)
+                                members.forEach { member ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(member.fullName ?: "Sin nombre", color = Color.White)
+                                        Checkbox(
+                                            checked = member.isPresent == true,
+                                            onCheckedChange = { isChecked ->
+                                                activeGroupId?.let { gid ->
+                                                    member.id?.let { uid ->
+                                                        homeViewModel.markPresence(gid, uid, isChecked)
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+                                GradientButton(text = "Finalizar Lista") {
+                                    activeGroupId?.let { id ->
+                                        homeViewModel.stopAttendance(id)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
             item {
-                Spacer(modifier = Modifier.height(15.dp))
-                TemperatureWidget(
-                    modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .fillMaxWidth(),
-                    state = ambientTemp,
-                    destinationName = "Barcelona",
-                    destinationTempC = 32f
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                CardRow(
-                    modifier = Modifier
-                        .padding(10.dp, 0.dp)
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    listOf(
-                        ActionCardGridItem(
-                            "Mapa",
-                            painter = R.drawable.map,
-                            color = R.color.red_400,
-                            subtitle = null
-                        ),
-                        ActionCardGridItem(
-                            "CheckIn",
-                            painter = R.drawable.map,
-                            color = R.color.orange_400,
-                            subtitle = null
-                        ),
-                        ActionCardGridItem(
-                            "Publicar",
-                            painter = R.drawable.map,
-                            color = R.color.orange_400,
-                            subtitle = null
-                        ),
-                        ActionCardGridItem(
-                            "Chat",
-                            painter = R.drawable.map,
-                            color = R.color.red_400,
-                            subtitle = null
-                        ),
-                    )
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                TitleAndButton("Próximas paradas", "Ver ruta")
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                Text("Aun no hay paradas JASJDKASJDK")
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                TitleAndButton("Publicaciones del grupo", "Ver todas")
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                Crossfade(
-                    targetState = publications,
-                    animationSpec = tween(durationMillis = 500),
-                    label = "publications"
-                ) { pubs ->
-                    Row(
-                        Modifier.padding(15.dp, 0.dp),
-                        horizontalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                        pubs.forEach { pub ->
-                            GroupPublication(
-                                modifier = Modifier
-                                    .height(200.dp)
-                                    .weight(1f),
-                                imgUrl = pub.imgUrl,
-                                location = pub.location,
-                                autorName = pub.autorName,
-                                contentDescription = pub.contentDescription,
-                                age = pub.age
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                GradientButton(
+                Row(
                     modifier = Modifier
                         .padding(15.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color.White)
+                        .padding(15.dp)
                         .fillMaxWidth(),
-                    text = "Volver a menu sin Viaje"
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    navController.navigate(Screen.Home.name)
+                    Column {
+                        Text(text = "Temperatura ambiente", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            text = "${ambientTempState.temperature?.toInt() ?: "--"}°C",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    GradientButton(text = "Ver mapa", modifier = Modifier.height(40.dp)) {
+                        navController.navigate(Screen.Map.name)
+                    }
                 }
             }
 
+            item {
+                TitleAndButton("Muro del grupo", "Ver todo")
+            }
+
+            items(publications) { post ->
+                GroupPublication(
+                    imgUrl = post.imageUrl ?: "",
+                    autorName = post.userName ?: "Anónimo",
+                    location = post.location ?: "Ubicación desconocida",
+                    age = "Reciente",
+                    contentDescription = post.description ?: "",
+                    onClick = {
+                        navController.navigate("${Screen.Post.name}?postId=${post.id}")
+                    },
+                    modifier = Modifier.padding(15.dp).fillMaxWidth().height(250.dp)
+                )
+            }
         }
     }
 }

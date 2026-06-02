@@ -11,19 +11,18 @@ import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.restore.RestorePwdScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.splash.SplashScreen
-import com.naranjapina.heat_tourism.features.company.presentation.CreateRoute.CreateRouteScreen
-import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ManageCompanyScreen
-import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
-import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen
+import com.naranjapina.heat_tourism.features.company.presentation.Company.screen.CompanyScreen
+import com.naranjapina.heat_tourism.features.home.presentation.Home.HomeDispatcher
 import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.RouteOverviewScreen
 import com.naranjapina.heat_tourism.features.map.presentation.RouteMap.RouteMapScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Buy.BuyScreen
+import com.naranjapina.heat_tourism.features.route.presentation.CreateRoute.CreateRouteScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Purchases.PurchasesScreen
+import com.naranjapina.heat_tourism.features.route.presentation.Route.RouteScreen
 import com.naranjapina.heat_tourism.features.settings.presentation.SettingsScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Chats.ChatScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Chats.ChatsListScreen
-import com.naranjapina.heat_tourism.features.social.presentation.Company.CompanyScreen
 import com.naranjapina.heat_tourism.features.social.presentation.CreatePost.CreatePostScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Friend.FriendScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Notifications.NotificationsScreen
@@ -38,11 +37,6 @@ import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
  *
  * NOTA: las variantes "For Coordinator" / "For Administrator" NO son rutas separadas:
  * se manejan con condicionales segun user.tipo dentro de la misma pantalla.
- *
- * Pantallas eliminadas vs Entrega 2:
- * - Route.kt (fusionada en RouteOverview que ya tiene mapa + descripcion).
- * - RouteGroup.kt (estaba vacia, la logica del coord vive en TravelHome con condicional).
- * - LogInCoordinator.kt (un solo login, rol detectado por user.tipo).
  */
 enum class Screen {
     // --- Auth ---
@@ -67,18 +61,19 @@ enum class Screen {
     Chat,               // Conversacion individual (recibe otherUserId)
 
     // --- Rutas y compras ---
-    RouteOverview,      // Detalle + mapa de una ruta (antes Route + RouteOverview, ahora fusionado)
+    Route,              // Detalle de una ruta
+    RouteOverview,      // Detalle + mapa de una ruta
     Buy,                // BuyRouteScreen
     Purchases,          // Historial de rutas compradas
+    CreateRoute,        // CRUD de rutas (admin de empresa)
 
     // --- Viaje activo ---
     RouteMap,           // Mapa de la ruta activa en vivo (con grupo si es coordinador)
+    RouteGroup,         // Vista del grupo durante el viaje
     CheckIn,            // Checkin de paradas
 
-    // --- Empresa / Coordinador ---
-    Company,            // CompanyScreen (3 modos: general / coord / admin)
-    ManageCompany,      // CompanyScreen For Administrator (a fusionar con Company)
-    CreateRoute         // CRUD de rutas (mock segun grafo)
+    // --- Empresa ---
+    Company             // CompanyScreen (vista general / coord / admin segun usuario)
 }
 
 @Composable
@@ -141,24 +136,20 @@ fun NavigationStack() {
             )
         }
 
-        // ==================== HOME (usuario general / viaje activo) ====================
-        composable(
-            route = "${Screen.Home.name}?state={state}",
-            arguments = listOf(
-                navArgument("state") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
-        ) {
-            val state = it.arguments?.getString("state")
-            if (state == "travel") TravelHomeScreen(navController)
-            else NoTravelHomeScreen(navController)
+        // ==================== HOME (delega segun viaje activo o no) ====================
+        composable(Screen.Home.name) {
+            HomeDispatcher(navController)
         }
 
         // ==================== USUARIO GENERAL ====================
         composable(Screen.Profile.name) {
-            ProfileScreen(authViewModel, navController)
+            ProfileScreen(
+                authViewModel = authViewModel,
+                navController = navController,
+                onGoToCompany = {
+                    navController.navigate(Screen.Company.name)
+                }
+            )
         }
         composable(Screen.Settings.name) {
             SettingsScreen(
@@ -176,7 +167,18 @@ fun NavigationStack() {
         composable(Screen.Friend.name) { FriendScreen(navController) }
         composable(Screen.Notifications.name) { NotificationsScreen(navController) }
         composable(Screen.CreatePost.name) { CreatePostScreen(navController) }
-        composable(Screen.Post.name) { PostScreen(navController) }
+        composable(
+            route = "${Screen.Post.name}?postId={postId}",
+            arguments = listOf(
+                navArgument("postId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {
+            val postId = it.arguments?.getString("postId") ?: "default_post_123"
+            PostScreen(navController, authViewModel, postId)
+        }
 
         // ==================== CHATS ====================
         composable(Screen.Chats.name) { ChatsListScreen(navController) }
@@ -194,6 +196,7 @@ fun NavigationStack() {
         }
 
         // ==================== RUTAS Y COMPRAS ====================
+        composable(Screen.Route.name) { RouteScreen(navController) }
         composable(
             route = "${Screen.RouteOverview.name}?destinationId={destinationId}",
             arguments = listOf(
@@ -204,18 +207,51 @@ fun NavigationStack() {
             )
         ) {
             val destinationId = it.arguments?.getString("destinationId")
-            RouteOverviewScreen(navController, destinationId)
+            RouteOverviewScreen(navController, destinationId, authViewModel)
         }
-        composable(Screen.Buy.name) { BuyScreen(navController) }
-        composable(Screen.Purchases.name) { PurchasesScreen(navController) }
+        composable(
+            route = "${Screen.Buy.name}?routeId={routeId}",
+            arguments = listOf(
+                navArgument("routeId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {
+            val routeId = it.arguments?.getString("routeId")
+            BuyScreen(navController, routeId, authViewModel)
+        }
+        composable(Screen.Purchases.name) {
+            PurchasesScreen(navController, authViewModel)
+        }
+        composable(Screen.CreateRoute.name) {
+            CreateRouteScreen(navController)
+        }
 
         // ==================== VIAJE ACTIVO ====================
         composable(Screen.RouteMap.name) { RouteMapScreen(navController) }
-        composable(Screen.CheckIn.name) { CheckInScreen(navController) }
+        composable(
+            route = "${Screen.CheckIn.name}/{groupId}",
+            arguments = listOf(
+                navArgument("groupId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            CheckInScreen(navController, groupId)
+        }
 
-        // ==================== EMPRESA / COORDINADOR ====================
-        composable(Screen.Company.name) { CompanyScreen(navController) }
-        composable(Screen.ManageCompany.name) { ManageCompanyScreen(navController) }
-        composable(Screen.CreateRoute.name) { CreateRouteScreen(navController) }
+        // ==================== EMPRESA ====================
+        composable(
+            route = "${Screen.Company.name}?companyId={companyId}",
+            arguments = listOf(
+                navArgument("companyId") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {
+            val companyId = it.arguments?.getString("companyId")
+            CompanyScreen(navController, authViewModel = authViewModel, companyId)
+        }
     }
 }

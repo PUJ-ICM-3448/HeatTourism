@@ -9,6 +9,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.naranjapina.heat_tourism.data.auth.model.AuthUser
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
 import com.naranjapina.heat_tourism.features.auth.presentation.register.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,7 +56,8 @@ class AuthViewModel : ViewModel() {
                     avatarURL = document.getString("avatarURL").orEmpty(),
                     nationality = document.getString("nationality").orEmpty(),
                     city = document.getString("city").orEmpty(),
-                    country = document.getString("country").orEmpty()
+                    country = document.getString("country").orEmpty(),
+                    roles = (document.get("roles") as? List<String> ?: emptyList()).map { UserRole.valueOf(it) },
                   )
                 )
               }

@@ -14,10 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.core.content.ContextCompat
 import com.mapbox.common.MapboxOptions
-import com.naranjapina.heat_tourism.navigation.NavigationStack
+import com.naranjapina.heat_tourism.core.design.theme.HeatTourismTheme
+import com.naranjapina.heat_tourism.core.navigation.NavigationStack
+import com.naranjapina.heat_tourism.core.utils.MapboxConfig
 import com.naranjapina.heat_tourism.shared.notifications.NotificationCenter
 import com.naranjapina.heat_tourism.shared.social.NotificationRepo
-import com.naranjapina.heat_tourism.utils.MapboxConfig
 
 class MainActivity : ComponentActivity() {
     private val notificationPermissionLauncher = registerForActivityResult(
@@ -37,13 +38,15 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorResource(R.color.beige)),
-                color = colorResource(R.color.beige)
-            ) {
-                NavigationStack()
+            HeatTourismTheme {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorResource(R.color.beige)),
+                    color = colorResource(R.color.beige)
+                ) {
+                    NavigationStack()
+                }
             }
         }
     }

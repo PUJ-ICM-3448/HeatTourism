@@ -1,13 +1,17 @@
 package com.naranjapina.heat_tourism.features.map.presentation
 
+import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.maps.android.compose.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
+import com.naranjapina.heat_tourism.data.service.LocationTrackingService
 
 @Composable
 fun RouteMapScreen(
@@ -19,6 +23,23 @@ fun RouteMapScreen(
 
     val cameraPositionState = rememberCameraPositionState()
     val usersLocations = remember { mutableStateMapOf<String, LatLng>() }
+
+    // Iniciar el LocationTrackingService cuando se monta la pantalla;
+    // detenerlo cuando el usuario sale.
+    DisposableEffect(groupId, userId) {
+        val intent = Intent(context, LocationTrackingService::class.java).apply {
+            putExtra("userId", userId)
+            putExtra("groupId", groupId)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(context, intent)
+        } else {
+            context.startService(intent)
+        }
+        onDispose {
+            context.stopService(Intent(context, LocationTrackingService::class.java))
+        }
+    }
 
     LaunchedEffect(groupId) {
         FirebaseFirestore.getInstance()

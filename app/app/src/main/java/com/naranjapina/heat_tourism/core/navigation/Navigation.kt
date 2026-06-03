@@ -187,11 +187,10 @@ fun NavigationStack() {
         // ==================== CHATS ====================
         composable(Screen.Chats.name) { ChatsListScreen(navController) }
         composable(
-            route = "${Screen.Chat.name}?otherUserId={otherUserId}",
+            route = "${Screen.Chat.name}/{otherUserId}",
             arguments = listOf(
                 navArgument("otherUserId") {
                     type = NavType.StringType
-                    nullable = true
                 }
             )
         ) {

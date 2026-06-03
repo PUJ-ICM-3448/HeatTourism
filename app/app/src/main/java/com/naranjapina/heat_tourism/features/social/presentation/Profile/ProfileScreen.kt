@@ -253,7 +253,7 @@ fun ProfileScreen(authViewModel: AuthViewModel, navController: NavHostController
                         }
                         Box(modifier = Modifier.weight(1f)) {
                             GradientButton(text = "Chats") {
-                                navController.navigate(Screen.ChatsList.name)
+                                navController.navigate(Screen.Chats.name)
                             }
                         }
                     }

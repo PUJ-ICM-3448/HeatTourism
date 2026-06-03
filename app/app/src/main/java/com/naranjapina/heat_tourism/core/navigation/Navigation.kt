@@ -72,7 +72,6 @@ enum class Screen {
 
     // --- Viaje activo ---
     RouteMap,           // Mapa de la ruta activa en vivo (con grupo si es coordinador)
-    RouteGroup,         // Vista del grupo durante el viaje
     CheckIn,            // Checkin de paradas
 
     // --- Empresa ---

@@ -1,0 +1,363 @@
+@startuml HeatTourism-Entrega3
+
+title Heat Tourism — Diagrama de clases (Entrega 3 · multi-usuario)
+
+' ==================== ENUMERACIONES ====================
+package "Enumeraciones" {
+  enum UserRole {
+    TOURIST
+    COORDINATOR
+    ADMINISTRATOR
+  }
+  enum EstadoViaje {
+    PLANEADO
+    EN_CURSO
+    FINALIZADO
+    CANCELADO
+  }
+  enum EstadoReserva {
+    PENDIENTE_PAGO
+    CONFIRMADA
+    EN_CURSO
+    FINALIZADA
+    CANCELADA
+  }
+  enum MetodoPago {
+    TARJETA
+    PSE
+    TRANSFERENCIA
+    EFECTIVO
+  }
+  enum EstadoAmistad {
+    PENDIENTE
+    ACEPTADA
+    RECHAZADA
+    BLOQUEADO
+  }
+  enum TipoNotificacion {
+    MENSAJE_CHAT
+    SOLICITUD_AMISTAD
+    AMISTAD_ACEPTADA
+    ALERTA_GRUPO
+    LLAMADO_LISTA
+    CHECKIN_APROBADO
+    COMENTARIO_POST
+    REACCION_POST
+    GENERAL
+  }
+  enum TipoAlerta {
+    VOLVER_AL_BUS
+    CAMBIO_DE_PUNTO
+    REUNION
+    EMERGENCIA
+    GENERAL
+  }
+  enum TipoReaccion {
+    ME_GUSTA
+    FUEGO
+    AMOR
+    IMPRESIONANTE
+    DIVERTIDO
+  }
+  enum TipoMensaje {
+    TEXTO
+    IMAGEN
+    UBICACION
+    SISTEMA
+  }
+  enum Sentimiento {
+    DIVERSION
+    RELAJACION
+    CULTURA
+    AVENTURA
+    GASTRONOMICO
+    NATURALEZA
+    ROMANTICO
+  }
+}
+
+' ==================== USUARIOS Y AUTENTICACION ====================
+package "Usuarios y autenticacion" {
+  class AuthUser {
+    -id: String
+    -authId: String
+    -email: String
+    -fullName: String
+    -userName: String
+    -phone: String
+    -avatarURL: String
+    -nationality: String
+    -city: String
+    -country: String
+    -roles: List<UserRole>
+    -fcmTokens: List<String>
+  }
+  note right of AuthUser
+    Persistido en Firestore
+    coleccion "users".
+    Contraseña la maneja Firebase Auth.
+  end note
+
+  class Amistad {
+    -id: String
+    -solicitanteId: String
+    -destinatarioId: String
+    -estado: EstadoAmistad
+    -fechaSolicitud: Timestamp
+    -fechaRespuesta: Timestamp?
+  }
+}
+
+AuthUser "1" -- "0..*" Amistad : tiene
+AuthUser "1" -- "0..1" UserRole
+
+' ==================== CHATS Y MENSAJES ====================
+package "Chats y mensajes" {
+  class Chat {
+    -id: String
+    -participantes: List<String>
+    -ultimoMensaje: String
+    -fechaUltimoMensaje: Timestamp
+    -noLeidosPor: Map<String, Int>
+  }
+
+  class Mensaje {
+    -id: String
+    -chatId: String
+    -senderId: String
+    -text: String
+    -tipo: TipoMensaje
+    -createdAt: Timestamp
+    -leido: Boolean
+  }
+}
+
+Chat "1" *-- "0..*" Mensaje : contiene
+AuthUser "0..*" -- "0..*" Chat : participa
+
+' ==================== NOTIFICACIONES ====================
+package "Notificaciones" {
+  class Notificacion {
+    -id: String
+    -userId: String
+    -fromUserId: String?
+    -titulo: String
+    -cuerpo: String
+    -tipo: TipoNotificacion
+    -chatId: String?
+    -leida: Boolean
+    -createdAt: Timestamp
+  }
+  note right of Notificacion
+    Persistido en Firestore.
+    Tambien se envia via FCM (push).
+  end note
+}
+
+AuthUser "1" -- "0..*" Notificacion : recibe
+
+' ==================== MAPA Y LUGARES ====================
+package "Mapa y lugares" {
+  class Ubicacion {
+    -latitud: Double
+    -longitud: Double
+    -direccionTexto: String?
+    -ciudad: String
+    -pais: String
+  }
+
+  class Lugar {
+    -id: String
+    -nombre: String
+    -descripcion: String
+    -fotoPortadaUrl: String
+    -ubicacion: Ubicacion
+    -categorias: List<String>
+  }
+
+  class LocationUpdate {
+    -id: String
+    -userId: String
+    -grupoId: String?
+    -latitud: Double
+    -longitud: Double
+    -timestamp: Timestamp
+  }
+  note right of LocationUpdate
+    Servicio en background
+    publica cada ~30s a Firestore.
+    Permite tracking en tiempo real.
+  end note
+
+  class ZonaCalor {
+    -id: String
+    -latitud: Double
+    -longitud: Double
+    -intensidad: Int
+    -categoriaPredominante: String
+    -sentimientoPredominante: Sentimiento
+  }
+}
+
+Lugar "1" -- "1" Ubicacion
+AuthUser "1" -- "0..*" LocationUpdate : publica
+
+' ==================== TURISMO Y RUTAS ====================
+package "Turismo, rutas y compras" {
+  class Company {
+    -id: String
+    -nombreComercial: String
+    -descripcion: String
+    -logoUrl: String
+    -telefonoContacto: String
+    -correoContacto: String
+    -administradoresIds: List<String>
+  }
+
+  class Route {
+    -id: String
+    -empresaId: String
+    -titulo: String
+    -descripcion: String
+    -duracionDias: Int
+    -cupoMaximo: Int
+    -precioBase: Double
+    -puntos: List<PuntoRuta>
+    -estado: String
+  }
+
+  class PuntoRuta {
+    -id: String
+    -rutaId: String
+    -lugarId: String
+    -orden: Int
+    -horaEstimada: String
+  }
+
+  class GrupoViaje {
+    -id: String
+    -routeId: String
+    -routeName: String
+    -coordinatorId: String
+    -miembrosIds: List<String>
+    -status: String
+    -codigoInvitacion: String
+    -createdAt: Long
+  }
+
+  class MiembroGrupo {
+    -userId: String
+    -grupoId: String
+    -rol: String
+    -fechaIngreso: Timestamp
+  }
+
+  class Reserva {
+    -id: String
+    -routeId: String
+    -userId: String
+    -grupoId: String?
+    -fechaReserva: Timestamp
+    -cantidadPersonas: Int
+    -total: Double
+    -estado: EstadoReserva
+    -metodoPago: MetodoPago
+  }
+}
+
+Company "1" *-- "0..*" Route : ofrece
+Route "1" *-- "1..*" PuntoRuta : tiene
+PuntoRuta "*" -- "1" Lugar : referencia
+Route "1" -- "0..*" GrupoViaje : genera
+GrupoViaje "1" *-- "1..*" MiembroGrupo : compuesto por
+AuthUser "1" -- "0..*" Reserva : hace
+AuthUser "1" -- "0..*" Company : administra
+
+' ==================== CONTENIDO SOCIAL ====================
+package "Contenido social" {
+  class Post {
+    -id: String
+    -autorId: String
+    -lugarId: String?
+    -descripcion: String
+    -imagenUrl: String?
+    -fechaPublicacion: Timestamp
+    -esDeViaje: Boolean
+  }
+
+  class Comment {
+    -id: String
+    -postId: String
+    -autorId: String
+    -texto: String
+    -fechaComentario: Timestamp
+  }
+
+  class Reaccion {
+    -id: String
+    -postId: String
+    -autorId: String
+    -tipo: TipoReaccion
+    -fechaReaccion: Timestamp
+  }
+}
+
+AuthUser "1" -- "0..*" Post : crea
+Post "1" *-- "0..*" Comment : tiene
+Post "1" *-- "0..*" Reaccion : tiene
+
+' ==================== OPERACION DEL VIAJE ====================
+package "Operacion del viaje" {
+  class AlertaGrupo {
+    -id: String
+    -grupoId: String
+    -coordinatorId: String
+    -titulo: String
+    -mensaje: String
+    -tipo: TipoAlerta
+    -timestamp: Timestamp
+  }
+
+  class CheckIn {
+    -id: String
+    -viajeId: String
+    -turistaId: String
+    -lugarId: String
+    -fechaHora: Timestamp
+    -estado: String
+  }
+}
+
+GrupoViaje "1" -- "0..*" AlertaGrupo : recibe
+GrupoViaje "1" -- "0..*" CheckIn
+
+' ==================== APIS EXTERNAS ====================
+package "APIs externas (REST)" {
+  class WeatherResponse {
+    -temp: Double
+    -descripcion: String
+    -humedad: Int
+    -ciudad: String
+  }
+
+  class CountryResponse {
+    -name: String
+    -region: String
+    -population: Long
+    -flag: String
+  }
+
+  class QRGenerator {
+    +generateQR(content: String): Bitmap
+  }
+}
+
+note as N1
+  Toda persistencia con Firebase Auth + Firestore.
+  Real-time via Firestore snapshotListener.
+  Push notifications via FCM.
+  REST APIs: OpenWeather, RestCountries.
+  Maps SDK: Mapbox (NO Google Maps).
+end note
+
+@enduml

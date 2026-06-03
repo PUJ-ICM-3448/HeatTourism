@@ -1,0 +1,153 @@
+@startuml HeatTourism-Navegacion-Entrega3
+
+title Heat Tourism — Diagrama de navegación (Entrega 3)
+
+skinparam state {
+  BackgroundColor<<auth>> #DDEEFF
+  BackgroundColor<<general>> #F5F5F5
+  BackgroundColor<<chat>> #FFF4DD
+  BackgroundColor<<viaje>> #DDFFDD
+  BackgroundColor<<empresa>> #FFDDDD
+  BackgroundColor<<coord>> #DDFFCC
+}
+
+[*] --> Splash : app abre
+
+state "Splash" as Splash <<auth>>
+Splash --> LogIn : sin sesion (o timeout 4s)
+Splash --> Home : con sesion activa
+
+state "LogIn" as LogIn <<auth>>
+LogIn --> Register : "no tienes cuenta?"
+LogIn --> RestorePwd : "olvidaste contrasena?"
+LogIn --> Home : credenciales OK
+
+state "Register" as Register <<auth>>
+Register --> LogIn : volver
+Register --> Home : registro exitoso
+
+state "RestorePwd" as RestorePwd <<auth>>
+RestorePwd --> LogIn : volver
+
+state "Home" as Home <<general>>
+note right of Home
+  HomeDispatcher decide:
+  - Sin viaje activo → NoTravelHome
+  - Con viaje activo → TravelHome
+  Si user es coordinador con viaje
+  → variante "For Coordinator"
+end note
+
+state "Bottom Nav" as BN <<general>> {
+  state "Home" as HomeNav
+  state "Buscador" as BuscadorNav
+  state "Crear" as CrearNav
+  state "Mapa" as MapaNav
+  state "Perfil" as PerfilNav
+}
+
+Home --> Searcher : tap "Buscador"
+Home --> CreatePost : tap "Crear"
+Home --> Map : tap "Mapa"
+Home --> Profile : tap "Perfil"
+
+state "Profile" as Profile <<general>>
+Profile --> Settings : icono ⚙
+Profile --> Friend : "Amigos"
+Profile --> Chats : "Chats"
+Profile --> Purchases : "Mis compras"
+Profile --> Company : "Mi empresa" (si admin)
+Profile --> Notifications : tap badge
+
+state "Settings" as Settings <<general>>
+Settings --> LogIn : "Cerrar sesion"
+
+state "Searcher" as Searcher <<general>>
+Searcher --> RouteOverview : tap destino
+
+state "Map" as Map <<general>>
+note right of Map
+  Mapa de calor general.
+  Pins de destinos + heat map de
+  densidad de turistas.
+end note
+Map --> RouteOverview : tap pin
+
+state "Friend" as Friend <<chat>>
+Friend --> Chats : "Iniciar chat"
+
+state "Chats" as Chats <<chat>>
+Chats --> Chat : tap conversacion
+state "Chat" as Chat <<chat>>
+note right of Chat
+  Tiempo real con Firestore listener.
+  Recibe otherUserId como parametro.
+end note
+
+state "Notifications" as Notifications <<chat>>
+Notifications --> Chat : tap notif de mensaje
+
+state "RouteOverview" as RouteOverview <<viaje>>
+note right of RouteOverview
+  Detalle + mapa de ruta.
+  Muestra clima (OpenWeather REST)
+  e info pais (RestCountries REST).
+end note
+RouteOverview --> Buy : "Comprar"
+RouteOverview --> RouteMap : "Iniciar ruta" (si comprado)
+
+state "Buy" as Buy <<viaje>>
+Buy --> Purchases : compra exitosa
+
+state "Purchases" as Purchases <<viaje>>
+
+state "RouteMap" as RouteMap <<viaje>>
+note right of RouteMap
+  Mapa de viaje activo.
+  Tracking tiempo real:
+  ubicacion del usuario + grupo.
+  Si user es coordinador → ver a todos.
+end note
+RouteMap --> CheckIn : tap punto de ruta
+
+state "CheckIn" as CheckIn <<viaje>>
+note right of CheckIn
+  Variante "For Coordinator":
+  aprueba/rechaza checkins de turistas.
+end note
+
+state "CreatePost" as CreatePost <<general>>
+CreatePost --> Home : publicacion creada
+
+state "Post" as Post <<general>>
+note right of Post
+  Ver detalle de un post.
+  Permite comentar y reaccionar.
+end note
+
+state "Company" as Company <<empresa>>
+note right of Company
+  3 modos segun user.tipo:
+  - General: vista publica
+  - Coordinator: ver sus rutas asignadas
+  - Administrator: editar empresa + CRUD
+end note
+Company --> CreateRoute : "Crear ruta" (si admin)
+
+state "CreateRoute" as CreateRoute <<empresa>>
+note right of CreateRoute
+  CRUD de rutas para admin.
+end note
+
+' Notas finales
+note as N1
+  Auth (azul) | General (gris) | Chat (amarillo)
+  Viaje (verde) | Empresa (rojo)
+
+  Pantallas mockeadas en otros mockups
+  pero no implementadas en codigo:
+  - Verde claro "coordinador de ruta actual"
+    = TravelHome con condicional isCoordinator
+end note
+
+@enduml

@@ -1,0 +1,167 @@
+@startuml HeatTourism-CasosDeUso-Entrega3
+
+title Heat Tourism — Casos de uso (Entrega 3 · multi-usuario)
+
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Turista" as T
+actor "Coordinador" as C
+actor "Administrador\nEmpresa" as A
+actor "Sistema" as S <<sistema>>
+
+rectangle "Heat Tourism" {
+
+  package "Autenticacion" {
+    usecase "Registrarse con correo" as UC1
+    usecase "Iniciar sesion" as UC2
+    usecase "Cerrar sesion" as UC3
+    usecase "Recuperar contrasena" as UC4
+    usecase "Mantener sesion activa" as UC5
+  }
+
+  package "Perfil y configuracion" {
+    usecase "Ver perfil propio" as UC6
+    usecase "Editar perfil" as UC7
+    usecase "Cambiar foto de perfil (camara/galeria)" as UC8
+    usecase "Editar configuracion" as UC9
+  }
+
+  package "Hardware" {
+    usecase "Tomar foto con la camara" as UC10
+    usecase "Seleccionar foto de la galeria" as UC11
+    usecase "Guardar en almacenamiento interno" as UC12
+    usecase "Refrescar feed agitando el celular" as UC13
+    usecase "Ver temperatura local vs destino" as UC14
+  }
+
+  package "Multi-usuario · BD dinamica" {
+    usecase "Buscar amigos" as UC15
+    usecase "Enviar solicitud de amistad" as UC16
+    usecase "Aceptar/rechazar solicitud" as UC17
+    usecase "Chatear con un amigo (tiempo real)" as UC18
+    usecase "Ver lista de chats" as UC19
+    usecase "Recibir push notification (FCM)" as UC20
+    usecase "Ver notificaciones in-app" as UC21
+    usecase "Comentar publicacion" as UC22
+    usecase "Reaccionar a publicacion" as UC23
+  }
+
+  package "Mapas y rutas" {
+    usecase "Ver mapa con ubicacion actual" as UC24
+    usecase "Explorar destinos en el mapa" as UC25
+    usecase "Calcular ruta entre dos puntos" as UC26
+    usecase "Ver heat map de destinos populares" as UC27
+  }
+
+  package "Tracking en tiempo real" {
+    usecase "Compartir mi ubicacion automaticamente" as UC28
+    usecase "Ver ubicacion de los miembros del grupo" as UC29
+  }
+
+  package "Servicios externos (REST)" {
+    usecase "Ver clima del destino (OpenWeather)" as UC30
+    usecase "Ver info del pais (RestCountries)" as UC31
+    usecase "Generar QR para invitar al grupo" as UC32
+  }
+
+  package "Compras y viajes" {
+    usecase "Comprar ruta turistica" as UC33
+    usecase "Ver historial de compras" as UC34
+    usecase "Ver viaje activo" as UC35
+    usecase "Hacer check-in en parada" as UC36
+    usecase "Crear publicacion del viaje" as UC37
+  }
+
+  package "Operacion del viaje (Coordinador)" {
+    usecase "Iniciar/finalizar viaje" as UC38
+    usecase "Aprobar/rechazar check-ins" as UC39
+    usecase "Emitir alerta grupal" as UC40
+    usecase "Iniciar llamado a lista" as UC41
+  }
+
+  package "Gestion de empresa (Administrador)" {
+    usecase "Crear/editar rutas (CRUD)" as UC42
+    usecase "Gestionar perfil de empresa" as UC43
+    usecase "Ver estadisticas" as UC44
+  }
+}
+
+' --- Turista ---
+T --> UC1
+T --> UC2
+T --> UC3
+T --> UC4
+T --> UC6
+T --> UC7
+T --> UC8
+T --> UC9
+T --> UC13
+T --> UC14
+T --> UC15
+T --> UC16
+T --> UC17
+T --> UC18
+T --> UC19
+T --> UC20
+T --> UC21
+T --> UC22
+T --> UC23
+T --> UC24
+T --> UC25
+T --> UC26
+T --> UC27
+T --> UC28
+T --> UC29
+T --> UC33
+T --> UC34
+T --> UC35
+T --> UC36
+T --> UC37
+
+' --- Coordinador ---
+C --> UC2
+C --> UC3
+C --> UC6
+C --> UC18
+C --> UC20
+C --> UC21
+C --> UC24
+C --> UC29
+C --> UC38
+C --> UC39
+C --> UC40
+C --> UC41
+
+' --- Administrador ---
+A --> UC2
+A --> UC3
+A --> UC6
+A --> UC42
+A --> UC43
+A --> UC44
+
+' --- Sistema ---
+S --> UC5
+S --> UC30
+S --> UC31
+S --> UC20
+
+' --- Includes ---
+UC8 ..> UC10 : <<include>>
+UC8 ..> UC11 : <<include>>
+UC8 ..> UC12 : <<include>>
+UC37 ..> UC10 : <<include>>
+UC37 ..> UC11 : <<include>>
+UC37 ..> UC12 : <<include>>
+UC26 ..> UC30 : <<include>>
+UC26 ..> UC31 : <<include>>
+
+note bottom
+  Entrega 3 = multi-usuario completo.
+  Los 3 actores tienen funcionalidad implementada.
+  Push notifications via FCM.
+  Tracking en tiempo real con Firestore listeners.
+end note
+
+@enduml

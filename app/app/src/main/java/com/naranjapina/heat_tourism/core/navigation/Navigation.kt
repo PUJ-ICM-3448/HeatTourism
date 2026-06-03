@@ -72,7 +72,6 @@ enum class Screen {
 
     // --- Viaje activo ---
     RouteMap,           // Mapa de la ruta activa en vivo (con grupo si es coordinador)
-    RouteGroup,         // Vista del grupo durante el viaje
     CheckIn,            // Checkin de paradas
 
     // --- Empresa ---
@@ -187,11 +186,10 @@ fun NavigationStack() {
         // ==================== CHATS ====================
         composable(Screen.Chats.name) { ChatsListScreen(navController) }
         composable(
-            route = "${Screen.Chat.name}?otherUserId={otherUserId}",
+            route = "${Screen.Chat.name}/{otherUserId}",
             arguments = listOf(
                 navArgument("otherUserId") {
                     type = NavType.StringType
-                    nullable = true
                 }
             )
         ) {

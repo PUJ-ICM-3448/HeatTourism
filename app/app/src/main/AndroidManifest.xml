@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission
-    android:name="android.permission.READ_EXTERNAL_STORAGE"
-    android:maxSdkVersion="32"
-  />
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -21,47 +21,57 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
-    android:allowBackup="true"
-    android:dataExtractionRules="@xml/data_extraction_rules"
-    android:fullBackupContent="@xml/backup_rules"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/Theme.HeatTourism"
-  >
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.HeatTourism">
+
         <meta-data
-      android:name="com.mapbox.maps.token"
-      android:value="@string/mapbox_access_token"
-    />
+            android:name="com.mapbox.maps.token"
+            android:value="@string/mapbox_access_token" />
+
+        <!-- Bloque B: Google Maps API key (heat map). Idealmente mover a strings.xml -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyB8mmHEgjXuv1m6w-o-F-_yETg4sdjfWi8" />
 
         <activity
-      android:name=".MainActivity"
-      android:exported="true"
-      android:label="@string/app_name"
-      android:theme="@style/Theme.HeatTourism"
-    >
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.HeatTourism">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <provider
-      android:name="androidx.core.content.FileProvider"
-      android:authorities="${applicationId}.provider"
-      android:exported="false"
-      android:grantUriPermissions="true"
-    >
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
-        android:name="android.support.FILE_PROVIDER_PATHS"
-        android:resource="@xml/file_paths"
-      />
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Bloque B: Location tracking en background para el viaje activo -->
+        <service
+            android:name=".data.service.LocationTrackingService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <!-- Bloque A: Firebase Cloud Messaging -->
         <service
             android:name=".shared.notifications.HeatFirebaseMessagingService"
             android:exported="false">

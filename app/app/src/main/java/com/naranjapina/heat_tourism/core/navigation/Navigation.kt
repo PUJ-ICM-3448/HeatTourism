@@ -7,6 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
 import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.restore.RestorePwdScreen
@@ -15,7 +18,7 @@ import com.naranjapina.heat_tourism.features.company.presentation.Company.screen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.HomeDispatcher
 import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
 import com.naranjapina.heat_tourism.features.map.presentation.Map.RouteOverviewScreen
-import com.naranjapina.heat_tourism.features.map.presentation.RouteMap.RouteMapScreen
+import com.naranjapina.heat_tourism.features.map.presentation.RouteMapScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Buy.BuyScreen
 import com.naranjapina.heat_tourism.features.route.presentation.CreateRoute.CreateRouteScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Purchases.PurchasesScreen
@@ -80,6 +83,7 @@ enum class Screen {
 fun NavigationStack() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
+    val authState by authViewModel.state.collectAsState()
 
     NavHost(
         navController = navController,
@@ -229,7 +233,13 @@ fun NavigationStack() {
         }
 
         // ==================== VIAJE ACTIVO ====================
-        composable(Screen.RouteMap.name) { RouteMapScreen(navController) }
+        composable(Screen.RouteMap.name) {
+            RouteMapScreen(
+                groupId = "grupo123",
+                userId = authState.user?.id ?: "unknown",
+                isCoordinator = false
+            )
+        }
         composable(
             route = "${Screen.CheckIn.name}/{groupId}",
             arguments = listOf(

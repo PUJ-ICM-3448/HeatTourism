@@ -1,5 +1,5 @@
 [versions]
-agp = "9.0.1"
+agp = "8.7.3"
 coilCompose = "3.4.0"
 coreKtx = "1.17.0"
 firebaseBom = "34.13.0"
@@ -61,4 +61,7 @@ retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", ve
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }

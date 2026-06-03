@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.naranjapina.heat_tourism" />
-                  <option name="mobileSdkAppId" value="1:841988693985:android:3e046182551f8c1957bca0" />
-                  <option name="projectId" value="heat-tourism" />
-                  <option name="projectNumber" value="841988693985" />
+                  <option name="mobileSdkAppId" value="1:891646431037:android:66927c089363088801ff54" />
+                  <option name="projectId" value="heattourism-13999" />
+                  <option name="projectNumber" value="891646431037" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

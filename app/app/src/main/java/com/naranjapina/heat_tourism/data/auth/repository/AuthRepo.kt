@@ -41,8 +41,9 @@ class AuthRepo {
                         avatarURL = result.documents[0].get("avatarURL").toString(),
                         nationality = result.documents[0].get("nationality").toString(),
                         city = result.documents[0].get("city").toString(),
-                        country = result.documents[0].get("country").toString()
-                    )
+                        country = result.documents[0].get("country").toString(),
+                        roles = (result.documents[0].get("roles") as? List<String> ?: emptyList()).map { UserRole.valueOf(it) },
+                        )
 
                 } catch (e: Exception) {
                     throw AuthException.UnknownAuthException(e.localizedMessage)

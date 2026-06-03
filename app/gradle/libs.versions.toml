@@ -18,8 +18,8 @@ composeBom = "2024.09.00"
 navigationCompose = "2.9.7"
 retrofit = "2.9.0"
 
-# Bloque B
-mapbox = "11.14.2"
+# Bloque B - Mapas + Localizacion + Rutas
+mapbox = "11.16.0"
 playServicesLocation = "21.3.0"
 accompanistPermissions = "0.36.0"
 
@@ -31,6 +31,8 @@ firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

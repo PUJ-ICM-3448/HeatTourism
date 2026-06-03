@@ -9,3 +9,56 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Dependencies
+node_modules/
+
+# Production build artifacts
+dist/
+out/
+build/
+
+# Bun-specific
+*.bun
+bun.lockb
+
+# Environment variables (highly sensitive)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS/Editor specific
+.DS_Store
+.vscode/
+.idea/
+
+app/.idea/
+
+.cocoindex_code
+*.salive
+*.sinfo
+*.swp
+*.swo
+*.swn
+*.swp~
+*~.swp
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+*.tmp
+*~
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+*.tmp
+*~

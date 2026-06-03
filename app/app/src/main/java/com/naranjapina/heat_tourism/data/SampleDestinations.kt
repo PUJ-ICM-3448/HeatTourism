@@ -1,6 +1,6 @@
 package com.naranjapina.heat_tourism.data
 
-import com.naranjapina.heat_tourism.data.model.MapPoint
+import com.naranjapina.heat_tourism.features.map.presentation.model.MapPoint
 
 object SampleDestinations {
     const val BOGOTA_CENTER_LNG = -74.08175

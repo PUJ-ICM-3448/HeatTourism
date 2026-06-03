@@ -1,95 +1,106 @@
 package com.naranjapina.heat_tourism.shared.auth
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthCredential
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
+import com.naranjapina.heat_tourism.data.auth.model.AuthUser
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
+import com.naranjapina.heat_tourism.features.auth.presentation.register.AuthState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
   private val auth : FirebaseAuth = Firebase.auth
+  private val db: FirebaseFirestore = Firebase.firestore
 
-  private val _currentUser = MutableStateFlow(auth.currentUser)
-  val currentUser : StateFlow<FirebaseUser?> = _currentUser
+  private val _state = MutableStateFlow(AuthState())
+  val state = _state.asStateFlow()
 
-  var email by mutableStateOf("")
-    private set
-  var password by mutableStateOf("")
-    private set
-  var isLoading by mutableStateOf(false)
-    private set
-  var feedbackMessage by mutableStateOf<String?>(null)
-    private set
+  init {
+    auth.addAuthStateListener { firebaseAuth ->
+      val currentUser = firebaseAuth.currentUser
 
+      Log.d("AuthViewModel", "Current user: $currentUser");
 
-  fun sigInUser(
-    email: String,
-    password: String
-  ) {
-    if(email.isBlank() || password.isBlank()) {
-      feedbackMessage = "Email y contraseña son requeridos"
-      return;
-    }
+      if (currentUser != null) {
+        viewModelScope.launch {
+          try {
+            val result = db.collection("users")
+              .whereEqualTo("authId", currentUser.uid)
+              .get()
+              .await()
 
-    isLoading = true;
-    feedbackMessage = null;
-    auth.signInWithEmailAndPassword(email, password)
-      .addOnCompleteListener { task ->
-        isLoading = false;
-        _currentUser.value = null;
-        if(task.isSuccessful) {
-          _currentUser.value = auth.currentUser
-        } else {
-          feedbackMessage = task.exception?.message
+            Log.d("AuthViewModel", "Current document: ${result.documents}");
+
+            if (!result.isEmpty) {
+              val document = result.documents[0]
+
+              _state.update { currentState ->
+                currentState.copy(
+                  authUser = currentUser,
+                  user = currentState.user ?: AuthUser(
+                    id = document.id,
+                    authId = currentUser.uid,
+                    email = document.getString("email").orEmpty(),
+                    fullName = document.getString("fullName").orEmpty(),
+                    userName = document.getString("userName").orEmpty(),
+                    phone = document.getString("phone").orEmpty(),
+                    avatarURL = document.getString("avatarURL").orEmpty(),
+                    nationality = document.getString("nationality").orEmpty(),
+                    city = document.getString("city").orEmpty(),
+                    country = document.getString("country").orEmpty(),
+                    roles = (document.get("roles") as? List<String> ?: emptyList()).map { UserRole.valueOf(it) },
+                  )
+                )
+              }
+            } else {
+              _state.update { currentState ->
+                currentState.copy(
+                  authUser = null,
+                  user = null
+                )
+              }
+            }
+          } catch (e: Exception) {
+            e.printStackTrace()
+          }
+        }
+      } else {
+        _state.update { currentState ->
+          currentState.copy(
+            authUser = null,
+            user = null,
+            isLoading = false
+          )
         }
       }
+    }
   }
 
   fun logOutUser () {
     auth.signOut()
-    _currentUser.value = null
-
-    email = ""
-    password = ""
-    feedbackMessage = "Sesión cerrada"
+    _state.update {
+      it.copy(
+        authUser = null,
+        user = null
+      )
+    }
   }
 
-  fun signUpUser(
-    email: String,
-    password: String
-  ) {
-    if(email.isBlank() || password.isBlank()) {
-      feedbackMessage = "Email y contraseña son requeridos"
-      return;
+  fun onUpdateUser(user: AuthUser) {
+    _state.update {
+      it.copy(
+        authUser = auth.currentUser,
+        user = user
+      )
     }
-
-    if(password.length < 8) {
-      feedbackMessage = "La contraseña debe tener al menos 8 caracteres"
-      return;
-    }
-
-    isLoading = true
-    feedbackMessage = null
-
-    auth.createUserWithEmailAndPassword(
-      email,
-      password
-    )
-      .addOnCompleteListener { task ->
-        isLoading = false;
-
-        if (task.isSuccessful)
-          _currentUser.value = auth.currentUser
-        else
-          feedbackMessage = task.exception?.message
-      }
-
   }
 }

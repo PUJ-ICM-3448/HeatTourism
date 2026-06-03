@@ -142,13 +142,19 @@ class NotificationRepo {
     fun syncFcmTokenForCurrentUser() {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
-            users.document(uid).set(
-                mapOf(
-                    "fcmTokens" to FieldValue.arrayUnion(token),
-                    "updatedAt" to FieldValue.serverTimestamp()
-                ),
-                SetOptions.merge()
-            )
+            // Buscar el user doc por authId (no asumir doc.id == authId)
+            users.whereEqualTo("authId", uid).limit(1).get()
+                .addOnSuccessListener { snapshot ->
+                    val docRef = snapshot.documents.firstOrNull()?.reference
+                        ?: return@addOnSuccessListener
+                    docRef.set(
+                        mapOf(
+                            "fcmTokens" to FieldValue.arrayUnion(token),
+                            "updatedAt" to FieldValue.serverTimestamp()
+                        ),
+                        SetOptions.merge()
+                    )
+                }
         }
     }
 }

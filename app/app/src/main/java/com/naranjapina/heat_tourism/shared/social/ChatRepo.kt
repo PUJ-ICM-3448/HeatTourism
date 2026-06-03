@@ -95,19 +95,31 @@ class ChatRepo {
         val chatRef = chats.document(chatId)
         val messageRef = chatRef.collection("messages").document()
 
-        val currentUserDoc = users.document(currentUserId).get().await()
-        val otherUserDoc = users.document(otherUserId).get().await()
+        // Buscar profiles por authId (Firebase Auth uid), no por doc.id auto-generado
+        val currentUserDoc = users.whereEqualTo("authId", currentUserId).limit(1)
+            .get().await().documents.firstOrNull()
+        val otherUserDoc = users.whereEqualTo("authId", otherUserId).limit(1)
+            .get().await().documents.firstOrNull()
 
-        val currentName = currentUserDoc.getString("displayName").orEmpty().ifBlank { "Usuario" }
-        val otherName = otherUserDoc.getString("displayName").orEmpty().ifBlank { "Usuario" }
+        val currentName = (currentUserDoc?.getString("displayName")
+            ?: currentUserDoc?.getString("fullName"))
+            .orEmpty().ifBlank { "Usuario" }
+        val otherName = (otherUserDoc?.getString("displayName")
+            ?: otherUserDoc?.getString("fullName"))
+            .orEmpty().ifBlank { "Usuario" }
+
+        val currentPhoto = (currentUserDoc?.getString("photoUrl")
+            ?: currentUserDoc?.getString("avatarURL")).orEmpty()
+        val otherPhoto = (otherUserDoc?.getString("photoUrl")
+            ?: otherUserDoc?.getString("avatarURL")).orEmpty()
 
         val participantNames = mapOf(
             currentUserId to currentName,
             otherUserId to otherName
         )
         val participantPhotos = mapOf(
-            currentUserId to currentUserDoc.getString("photoUrl").orEmpty(),
-            otherUserId to otherUserDoc.getString("photoUrl").orEmpty()
+            currentUserId to currentPhoto,
+            otherUserId to otherPhoto
         )
 
         val batch = db.batch()

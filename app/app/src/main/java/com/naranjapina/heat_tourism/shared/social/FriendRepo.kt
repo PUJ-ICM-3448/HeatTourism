@@ -141,15 +141,25 @@ class FriendRepo {
             .values
 
         return merged.mapNotNull { doc ->
-            if (doc.id == currentUserId) return@mapNotNull null
+            // Usar authId (Firebase Auth uid) como identificador, no el doc.id auto-generado.
+            // Esto asegura consistencia con FirebaseAuth.currentUser?.uid que usan las pantallas.
+            val authId = doc.getString("authId") ?: doc.id
+            if (authId == currentUserId) return@mapNotNull null
             UserSearchItem(
-                id = doc.id,
-                displayName = doc.getString("displayName").orEmpty().ifBlank { "Usuario" },
+                id = authId,
+                displayName = doc.getString("displayName").orEmpty()
+                    .ifBlank { doc.getString("fullName").orEmpty() }
+                    .ifBlank { "Usuario" },
                 email = doc.getString("email").orEmpty(),
                 photoUrl = doc.getString("photoUrl")
+                    ?: doc.getString("avatarURL")
             )
         }.sortedBy { it.displayName.lowercase() }
     }
+
+    /** Busca un user doc por su authId (Firebase Auth uid). */
+    private suspend fun findUserDocByAuthId(authId: String) =
+        users.whereEqualTo("authId", authId).limit(1).get().await().documents.firstOrNull()
 
     suspend fun sendFriendRequest(fromUserId: String, toUserId: String): Boolean {
         if (fromUserId == toUserId) return false
@@ -163,13 +173,20 @@ class FriendRepo {
             return false
         }
 
-        val fromProfile = users.document(fromUserId).get().await()
-        val toProfile = users.document(toUserId).get().await()
+        // Buscar profiles por authId (Firebase Auth uid), no por doc.id
+        val fromProfile = findUserDocByAuthId(fromUserId)
+        val toProfile = findUserDocByAuthId(toUserId)
 
-        val fromName = fromProfile.getString("displayName").orEmpty().ifBlank { "Usuario" }
-        val toName = toProfile.getString("displayName").orEmpty().ifBlank { "Usuario" }
-        val fromPhoto = fromProfile.getString("photoUrl")
-        val toPhoto = toProfile.getString("photoUrl")
+        val fromName = (fromProfile?.getString("displayName")
+            ?: fromProfile?.getString("fullName"))
+            .orEmpty().ifBlank { "Usuario" }
+        val toName = (toProfile?.getString("displayName")
+            ?: toProfile?.getString("fullName"))
+            .orEmpty().ifBlank { "Usuario" }
+        val fromPhoto = fromProfile?.getString("photoUrl")
+            ?: fromProfile?.getString("avatarURL")
+        val toPhoto = toProfile?.getString("photoUrl")
+            ?: toProfile?.getString("avatarURL")
 
         docRef.set(
             mapOf(

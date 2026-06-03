@@ -1,4 +1,4 @@
-package com.naranjapina.heat_tourism.features.map.presentation.map
+package com.naranjapina.heat_tourism.features.map.presentation.Map
 
 import android.Manifest
 import androidx.compose.foundation.background
@@ -148,7 +148,7 @@ fun RouteOverviewScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
             GradientButton(modifier = Modifier.fillMaxWidth(), text = "Iniciar ruta") {
-                navController.navigate(Screen.RouteMapLive.name)
+                navController.navigate(Screen.RouteMap.name)
             }
         }
     }

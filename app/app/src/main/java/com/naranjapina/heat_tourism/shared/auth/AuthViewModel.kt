@@ -58,19 +58,23 @@ class AuthViewModel : ViewModel() {
                     city = document.getString("city").orEmpty(),
                     country = document.getString("country").orEmpty(),
                     roles = (document.get("roles") as? List<String> ?: emptyList()).map { UserRole.valueOf(it) },
-                  )
+                  ),
+                  isLoading = false
                 )
               }
             } else {
               _state.update { currentState ->
                 currentState.copy(
                   authUser = null,
-                  user = null
+                  user = null,
+                  isLoading = false
                 )
               }
             }
           } catch (e: Exception) {
             e.printStackTrace()
+            // Importante: aun en caso de error, dejar de cargar para no bloquear el Splash
+            _state.update { it.copy(isLoading = false) }
           }
         }
       } else {

@@ -148,7 +148,7 @@ fun RouteOverviewScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
             GradientButton(modifier = Modifier.fillMaxWidth(), text = "Iniciar ruta") {
-                navController.navigate(Screen.RouteMapLive.name)
+                navController.navigate(Screen.RouteMap.name)
             }
         }
     }

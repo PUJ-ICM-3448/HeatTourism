@@ -19,10 +19,17 @@ import androidx.compose.ui.unit.dp
 import com.naranjapina.heat_tourism.R
 import com.naranjapina.heat_tourism.core.component.brand.HeatTourismFullLogo
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
+import kotlinx.coroutines.delay
+
+private const val SPLASH_TIMEOUT_MS = 4000L
 
 /**
  * Pantalla de splash. Muestra el logo mientras AuthViewModel verifica
  * si hay sesion activa y luego navega a Home o LogIn.
+ *
+ * Tiene un timeout de seguridad de 4s: si la verificacion de sesion no
+ * responde (por ejemplo, sin red o Firebase lento), navega a LogIn de
+ * todas formas para no bloquear la app.
  */
 @Composable
 fun SplashScreen(
@@ -39,6 +46,13 @@ fun SplashScreen(
             } else {
                 onGoToLogIn()
             }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(SPLASH_TIMEOUT_MS)
+        if (state.isLoading) {
+            onGoToLogIn()
         }
     }
 

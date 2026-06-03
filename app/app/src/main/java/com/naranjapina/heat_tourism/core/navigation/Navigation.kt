@@ -211,7 +211,7 @@ fun NavigationStack() {
             )
         ) {
             val destinationId = it.arguments?.getString("destinationId")
-            RouteOverviewScreen(navController, destinationId, authViewModel)
+            RouteOverviewScreen(navController, destinationId)
         }
         composable(
             route = "${Screen.Buy.name}?routeId={routeId}",

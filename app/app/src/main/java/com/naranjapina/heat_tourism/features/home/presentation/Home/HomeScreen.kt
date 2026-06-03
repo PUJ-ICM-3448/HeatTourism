@@ -1,31 +1,20 @@
 package com.naranjapina.heat_tourism.features.home.presentation.Home
 
-import android.widget.Toast
+import android.Manifest
+import android.content.Intent
+import android.os.Build
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,277 +24,90 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.naranjapina.heat_tourism.R
-import com.naranjapina.heat_tourism.core.component.ActionCardGridItem
-import com.naranjapina.heat_tourism.core.component.CardRow
-import com.naranjapina.heat_tourism.core.component.DestinationCard
-import com.naranjapina.heat_tourism.core.component.GradientButton
-import com.naranjapina.heat_tourism.core.component.GroupPublication
-import com.naranjapina.heat_tourism.core.component.JustInputText
-import com.naranjapina.heat_tourism.core.component.LazyFilterChipRow
-import com.naranjapina.heat_tourism.core.component.TemperatureWidget
-import com.naranjapina.heat_tourism.core.component.TitleAndButton
+import com.naranjapina.heat_tourism.core.component.*
 import com.naranjapina.heat_tourism.core.layout.MenuBottonLayout
 import com.naranjapina.heat_tourism.core.navigation.Screen
-import com.naranjapina.heat_tourism.core.utils.RememberShakeDetector
-import com.naranjapina.heat_tourism.core.utils.mockDestinations
-import com.naranjapina.heat_tourism.core.utils.mockPublications
-import com.naranjapina.heat_tourism.core.utils.redToOrangeGradientBrush
-import com.naranjapina.heat_tourism.core.utils.rememberAmbientTemperature
+import com.naranjapina.heat_tourism.core.utils.*
+import com.naranjapina.heat_tourism.data.network.WeatherRepository
+import com.naranjapina.heat_tourism.data.service.LocationTrackingService
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun NoTravelHomeScreen(navController: NavHostController) {
-    var text by remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-    var destinations by remember {
-        mutableStateOf(mockDestinations.shuffled().take(4))
-    }
-
-    RememberShakeDetector {
-        destinations = mockDestinations.shuffled().take(4)
-        scope.launch {
-            listState.animateScrollToItem(0)
-        }
-        Toast.makeText(context, "Feed actualizado 🔄", Toast.LENGTH_SHORT).show()
-    }
-
-    MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .background(color = colorResource(R.color.beige))
-                .padding(0.dp, 0.dp, 0.dp, paddingValues.calculateBottomPadding())
-                .fillMaxSize()
-        ) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .background(brush = redToOrangeGradientBrush())
-                        .fillMaxWidth()
-                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
-                        .padding(24.dp)
-                ) {
-                    Text(
-                        text = "Hola, viajero 👋",
-                        color = Color.White,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "¿A dónde quieres ir hoy?",
-                        color = Color.White,
-                    )
-                    Spacer(modifier = Modifier.height(5.dp))
-                    JustInputText(
-                        value = text,
-                        placeholder = "Buscar destinos, lugares, eventos...",
-                        icon = Icons.Outlined.Search,
-                        changeValue = { text = it }
-                    )
-                }
-            }
-            item {
-                Spacer(modifier = Modifier.height(5.dp))
-                LazyFilterChipRow()
-            }
-
-            item {
-
-                TitleAndButton("Destinos en tendencia", "Ver todos")
-
-            }
-
-            items(destinations, key = { it.destinationName }) { destination ->
-                DestinationCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
-                        .padding(horizontal = 15.dp, vertical = 8.dp)
-                        .animateItem(
-                            fadeInSpec = tween(durationMillis = 500),
-                            fadeOutSpec = tween(durationMillis = 300),
-                            placementSpec = tween(durationMillis = 500)
-                        ),
-                    data = destination,
-                    navController = navController
-                )
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                GradientButton(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    text = "Ir a menu con Viaje"
-                ) {
-                    navController.navigate("${Screen.Home.name}?state=travel")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TravelHomeScreen(navController: NavHostController) {
+fun TravelHomeScreen(navController: NavHostController, userId: String) {
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val ambientTemp = rememberAmbientTemperature()
-    var publications by remember {
-        mutableStateOf(mockPublications.shuffled().take(2))
+    var publications by remember { mutableStateOf(mockPublications.shuffled().take(2)) }
+    var realTemp by remember { mutableStateOf<Float?>(null) }
+    val weatherRepo = remember { WeatherRepository() }
+
+    val backgroundLocationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        rememberPermissionState(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    } else null
+
+    LaunchedEffect(Unit) {
+        try {
+            realTemp = weatherRepo.getTemperature("Barcelona")
+        } catch (e: Exception) { e.printStackTrace() }
+
+        // Requisito Bloque B: Iniciar seguimiento con el userId real
+        val intent = Intent(context, LocationTrackingService::class.java).apply {
+            putExtra("userId", userId)
+            putExtra("groupId", "grupo123")
+        }
+        ContextCompat.startForegroundService(context, intent)
+
+        if (backgroundLocationPermissionState?.status?.isGranted == false) {
+            backgroundLocationPermissionState.launchPermissionRequest()
+        }
     }
 
     RememberShakeDetector {
         publications = mockPublications.shuffled().take(2)
-        scope.launch {
-            listState.animateScrollToItem(0)
-        }
-        Toast.makeText(context, "Publicaciones del grupo actualizadas 🔄", Toast.LENGTH_SHORT).show()
+        scope.launch { listState.animateScrollToItem(0) }
     }
 
     MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .background(color = colorResource(R.color.beige))
-                .padding(0.dp, 0.dp, 0.dp, paddingValues.calculateBottomPadding())
-                .fillMaxSize()
+            modifier = Modifier.background(colorResource(R.color.beige)).padding(bottom = paddingValues.calculateBottomPadding()).fillMaxSize()
         ) {
             item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .background(brush = redToOrangeGradientBrush())
-                        .fillMaxWidth()
-                        .padding(0.dp, paddingValues.calculateTopPadding(), 0.dp, 0.dp)
-                        .padding(24.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column {
-                            Text(
-                                text = "Viaje activo",
-                                color = Color.LightGray,
-                                fontSize = 14.sp,
-                            )
-                            Text(
-                                text = "Barcelona Explorer",
-                                color = Color.White,
-                                fontSize = 28.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Text(
-                            text = "En curso",
-                            color = Color.White,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(15.dp))
-                                .background(colorResource(R.color.neutral_100).copy(alpha = 0.25f))
-                                .padding(10.dp),
-                            fontSize = 14.sp,
-                        )
-                    }
-                    Text(
-                        text = "Barcelona, España",
-                        color = Color.White,
-                    )
-
-                    Column(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(15.dp))
-                            .background(colorResource(R.color.neutral_100).copy(alpha = 0.25f))
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Progreso del viaje",
-                                color = colorResource(R.color.neutral_200)
-                            )
-                            Text(
-                                text = "2/5 puntos",
-                                color = colorResource(R.color.neutral_100)
-                            )
-                        }
-                        Row(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(5.dp))
-                                .background(colorResource(R.color.neutral_200).copy(.35f))
-                        ) {
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .weight(2f)
-                                    .clip(RoundedCornerShape(5.dp)),
-                                color = Color.White,
-                                thickness = 10.dp
-                            )
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .weight(5f),
-                                color = Color.Transparent,
-                                thickness = 10.dp
-                            )
-                        }
-                    }
-                }
+                HomeHeader(paddingValues, title = "Barcelona Explorer", subtitle = "Barcelona, España")
             }
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 TemperatureWidget(
-                    modifier = Modifier
-                        .padding(horizontal = 15.dp)
-                        .fillMaxWidth(),
+                    modifier = Modifier.padding(horizontal = 15.dp).fillMaxWidth(),
                     state = ambientTemp,
                     destinationName = "Barcelona",
-                    destinationTempC = 32f
+                    destinationTempC = realTemp ?: 25f
                 )
             }
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 CardRow(
-                    modifier = Modifier
-                        .padding(10.dp, 0.dp)
-                        .fillMaxWidth()
-                        .height(100.dp),
-                    listOf(
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                    list = listOf(
                         ActionCardGridItem(
-                            "Mapa",
+                            title = "CheckIn (Live)",
                             painter = R.drawable.map,
-                            color = R.color.red_400,
-                            subtitle = null
-                        ),
-                        ActionCardGridItem(
-                            "CheckIn",
-                            painter = R.drawable.map,
+                            subtitle = "Ver mapa en vivo",
                             color = R.color.orange_400,
-                            subtitle = null
+                            onClick = { navController.navigate(Screen.RouteMapLive.name) }
                         ),
-                        ActionCardGridItem(
-                            "Publicar",
-                            painter = R.drawable.map,
-                            color = R.color.orange_400,
-                            subtitle = null
-                        ),
-                        ActionCardGridItem(
-                            "Chat",
-                            painter = R.drawable.map,
-                            color = R.color.red_400,
-                            subtitle = null
-                        ),
+                        ActionCardGridItem(title = "Publicar", painter = R.drawable.map, subtitle = null, color = R.color.orange_400),
+                        ActionCardGridItem(title = "Chat", painter = R.drawable.map, subtitle = null, color = R.color.red_400)
                     )
                 )
             }
@@ -313,57 +115,94 @@ fun TravelHomeScreen(navController: NavHostController) {
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 TitleAndButton("Próximas paradas", "Ver ruta")
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                Text("Aun no hay paradas JASJDKASJDK")
+                Text(text = "Aun no hay paradas", modifier = Modifier.padding(15.dp))
             }
 
             item {
                 Spacer(modifier = Modifier.height(15.dp))
                 TitleAndButton("Publicaciones del grupo", "Ver todas")
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(15.dp))
-                Crossfade(
-                    targetState = publications,
-                    animationSpec = tween(durationMillis = 500),
-                    label = "publications"
-                ) { pubs ->
-                    Row(
-                        Modifier.padding(15.dp, 0.dp),
-                        horizontalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
+                Crossfade(targetState = publications, label = "pubs") { pubs ->
+                    Row(Modifier.padding(15.dp, 0.dp), horizontalArrangement = Arrangement.spacedBy(15.dp)) {
                         pubs.forEach { pub ->
                             GroupPublication(
-                                modifier = Modifier
-                                    .height(200.dp)
-                                    .weight(1f),
-                                imgUrl = pub.imgUrl,
-                                location = pub.location,
-                                autorName = pub.autorName,
-                                contentDescription = pub.contentDescription,
-                                age = pub.age
+                                modifier = Modifier.height(200.dp).weight(1f),
+                                imgUrl = pub.imgUrl, location = pub.location,
+                                autorName = pub.autorName, contentDescription = pub.contentDescription, age = pub.age
                             )
                         }
                     }
                 }
             }
-
+            
             item {
-                Spacer(modifier = Modifier.height(15.dp))
-                GradientButton(
-                    modifier = Modifier
-                        .padding(15.dp)
-                        .fillMaxWidth(),
-                    text = "Volver a menu sin Viaje"
-                ) {
+                Spacer(modifier = Modifier.height(20.dp))
+                GradientButton(modifier = Modifier.padding(15.dp).fillMaxWidth(), text = "Cerrar Viaje") {
                     navController.navigate(Screen.Home.name)
                 }
             }
+        }
+    }
+}
 
+@Composable
+fun HomeHeader(paddingValues: PaddingValues, title: String, subtitle: String) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        modifier = Modifier.background(redToOrangeGradientBrush()).fillMaxWidth()
+            .padding(top = paddingValues.calculateTopPadding()).padding(24.dp)
+    ) {
+        Text(text = title, color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text(text = subtitle, color = Color.White)
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier = Modifier.clip(RoundedCornerShape(15.dp)).background(Color.White.copy(0.2f)).padding(15.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Progreso del viaje", color = Color.White, modifier = Modifier.weight(1f))
+            Text("2/5 puntos", color = Color.White, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+fun NoTravelHomeScreen(navController: NavHostController, userId: String) {
+    var text by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
+    var destinations by remember { mutableStateOf(mockDestinations.shuffled().take(4)) }
+
+    MenuBottonLayout(activeName = "home", navController = navController) { paddingValues ->
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.background(colorResource(R.color.beige)).padding(bottom = paddingValues.calculateBottomPadding()).fillMaxSize()
+        ) {
+            item {
+                Column(
+                    modifier = Modifier.background(redToOrangeGradientBrush()).fillMaxWidth()
+                        .padding(top = paddingValues.calculateTopPadding()).padding(24.dp)
+                ) {
+                    Text("Hola, viajero 👋", color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+                    Text("¿A dónde quieres ir hoy?", color = Color.White)
+                    Spacer(modifier = Modifier.height(15.dp))
+                    JustInputText(value = text, placeholder = "Buscar destinos...", icon = Icons.Outlined.Search, changeValue = { text = it })
+                }
+            }
+            item { 
+                Spacer(modifier = Modifier.height(5.dp))
+                LazyFilterChipRow()
+                TitleAndButton("Destinos en tendencia", "Ver todos") 
+            }
+            items(destinations) { dest ->
+                DestinationCard(
+                    modifier = Modifier.fillMaxWidth().height(300.dp).padding(15.dp, 8.dp),
+                    data = dest, navController = navController
+                )
+            }
+            item {
+                GradientButton(modifier = Modifier.padding(15.dp).fillMaxWidth(), text = "Simular Viaje Activo") {
+                    navController.navigate("${Screen.Home.name}?state=travel")
+                }
+            }
         }
     }
 }

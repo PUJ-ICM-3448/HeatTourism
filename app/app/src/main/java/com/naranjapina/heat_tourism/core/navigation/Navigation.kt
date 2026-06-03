@@ -9,13 +9,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.naranjapina.heat_tourism.data.auth.model.UserRole
 import com.naranjapina.heat_tourism.features.auth.presentation.login.LogInScreen
 import com.naranjapina.heat_tourism.features.auth.presentation.register.RegisterScreen
 import com.naranjapina.heat_tourism.features.company.presentation.ManageCompany.ManageCompanyScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.NoTravelHomeScreen
 import com.naranjapina.heat_tourism.features.home.presentation.Home.TravelHomeScreen
-import com.naranjapina.heat_tourism.features.map.presentation.Map.MapScreen
-import com.naranjapina.heat_tourism.features.map.presentation.Map.RouteOverviewScreen
+import com.naranjapina.heat_tourism.features.map.presentation.map.MapScreen
+import com.naranjapina.heat_tourism.features.map.presentation.map.RouteOverviewScreen
+import com.naranjapina.heat_tourism.features.map.presentation.RouteMapScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Buy.BuyScreen
 import com.naranjapina.heat_tourism.features.route.presentation.Route.RouteScreen
 import com.naranjapina.heat_tourism.features.social.presentation.Company.CompanyScreen
@@ -28,144 +30,77 @@ import com.naranjapina.heat_tourism.features.travel.presentation.RouteGroup.Rout
 import com.naranjapina.heat_tourism.shared.auth.AuthViewModel
 
 enum class Screen {
-    Home,
-    Register,
-    LogIn,
-    Route,
-    Profile,
-    Company,
-    Buy,
-    Searcher,
-    CreatePost,
-    Post,
-    Map,
-    ManageCompany,
-    RouteGroup,
-    CheckIn,
-    RouteOverview
+    Home, Register, LogIn, Route, Profile, Company, Buy, Searcher,
+    CreatePost, Post, Map, ManageCompany, RouteGroup, CheckIn, 
+    RouteOverview, RouteMapLive
 }
 
 @Composable
 fun NavigationStack() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
-
-    val authState by authViewModel.state.collectAsState();
+    val authState by authViewModel.state.collectAsState()
 
     NavHost(
-        navController, startDestination =
-            if (authState.user == null)
-                Screen.LogIn.name
-            else Screen.Home.name
+        navController, 
+        startDestination = if (authState.user == null) Screen.LogIn.name else Screen.Home.name
     ) {
-        composable(
-            route = Screen.Buy.name
-        ) {
-            BuyScreen(navController)
-        }
-        composable(
-            route = Screen.CheckIn.name
-        ) {
-            CheckInScreen(navController)
-        }
-        composable(
-            route = Screen.Company.name
-        ) {
-            CompanyScreen(navController)
-        }
-        composable(
-            route = Screen.CreatePost.name
-        ) {
-            CreatePostScreen(navController)
-        }
+        composable(route = Screen.Buy.name) { BuyScreen(navController) }
+        composable(route = Screen.CheckIn.name) { CheckInScreen(navController) }
+        composable(route = Screen.Company.name) { CompanyScreen(navController) }
+        composable(route = Screen.CreatePost.name) { CreatePostScreen(navController) }
+        
         composable(
             route = "${Screen.Home.name}?state={state}",
-            arguments = listOf(
-                navArgument("state") {
-                    type = NavType.StringType
-                    nullable = true
-                }
-            )
+            arguments = listOf(navArgument("state") { type = NavType.StringType; nullable = true })
         ) {
             val state = it.arguments?.getString("state")
+            val userId = authState.user?.id ?: "guest"
+            if (state == "travel") {
+                TravelHomeScreen(navController, userId)
+            } else {
+                NoTravelHomeScreen(navController, userId)
+            }
+        }
 
-            if (state == "travel")
-                TravelHomeScreen(navController)
-            else
-                NoTravelHomeScreen(navController)
-        }
-        composable(
-            route = Screen.LogIn.name
-        ) {
+        composable(route = Screen.LogIn.name) {
             LogInScreen(
-                authViewModel = authViewModel,
-                viewModel = viewModel(),
-                onGoToHome = {
-                    navController.navigate(Screen.Home.name)
-                },
-                onGoToRegister = {
-                    navController.navigate(Screen.Register.name)
-                }
+                authViewModel = authViewModel, viewModel = viewModel(),
+                onGoToHome = { navController.navigate(Screen.Home.name) },
+                onGoToRegister = { navController.navigate(Screen.Register.name) }
             )
         }
-        composable(
-            route = Screen.ManageCompany.name
-        ) {
-            ManageCompanyScreen(navController)
-        }
-        composable(
-            route = Screen.Map.name
-        ) {
-            MapScreen(navController)
-        }
-        composable(
-            route = Screen.Post.name
-        ) {
-            PostScreen(navController)
-        }
-        composable(
-            route = Screen.Profile.name
-        ) {
-            ProfileScreen(
-                authViewModel,
-                navController
+
+        composable(route = Screen.ManageCompany.name) { ManageCompanyScreen(navController) }
+        composable(route = Screen.Map.name) { MapScreen(navController) }
+        composable(route = Screen.Post.name) { PostScreen(navController) }
+        composable(route = Screen.Profile.name) { ProfileScreen(authViewModel, navController) }
+
+        composable(route = Screen.Register.name) {
+            RegisterScreen(authViewModel = authViewModel, viewModel = viewModel(), 
+                onGoToLogin = { navController.navigate(Screen.LogIn.name) },
+                onGoToHome = { navController.navigate(Screen.Home.name) }
             )
         }
-        composable(
-            route = Screen.Register.name
-        ) {
-            RegisterScreen(authViewModel = authViewModel, viewModel = viewModel(), onGoToLogin = {
-                navController.navigate(Screen.LogIn.name)
-            }, onGoToHome = {
-                navController.navigate(Screen.Home.name)
-            })
-        }
-        composable(
-            route = Screen.Route.name
-        ) {
-            RouteScreen(navController)
-        }
-        composable(
-            route = Screen.RouteGroup.name
-        ) {
-            RouteGroupScreen(navController)
-        }
+
+        composable(route = Screen.Route.name) { RouteScreen(navController) }
+        composable(route = Screen.RouteGroup.name) { RouteGroupScreen(navController) }
+
         composable(
             route = "${Screen.RouteOverview.name}?destinationId={destinationId}",
-            arguments = listOf(
-                navArgument("destinationId") {
-                    type = NavType.StringType
-                    nullable = true
-                }
+            arguments = listOf(navArgument("destinationId") { type = NavType.StringType; nullable = true })
+        ) {
+            RouteOverviewScreen(navController, it.arguments?.getString("destinationId"))
+        }
+
+        composable(route = Screen.RouteMapLive.name) {
+            RouteMapScreen(
+                groupId = "grupo123",
+                userId = authState.user?.id ?: "unknown",
+                isCoordinator = authState.user?.roles?.contains(UserRole.COORDINATOR) == true
             )
-        ) {
-            val destinationId = it.arguments?.getString("destinationId")
-            RouteOverviewScreen(navController, destinationId)
         }
-        composable(
-            route = Screen.Searcher.name
-        ) {
-            SearcherScreen(navController)
-        }
+
+        composable(route = Screen.Searcher.name) { SearcherScreen(navController) }
     }
 }
